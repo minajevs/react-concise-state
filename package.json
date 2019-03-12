@@ -1,0 +1,28 @@
+{
+  "name": "yarsm",
+  "version": "0.1.0",
+  "description": "Yet another react state manager",
+  "author": "Dmitrijs Minajevs <dmitrijs.minajevs@outlook.com> (http://dexie.me)",
+  "repository": "https://github.com/minajevs/yarsm",
+  "homepage": "https://github.com/minajevs/yarsm",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "state",
+    "context"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@types/react": "^16.8.7"
+  },
+  "devDependencies": {
+    "react": "^16.8.4",
+    "typescript": "^3.3.3333"
+  }
+}
