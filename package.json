@@ -1,10 +1,10 @@
 {
-  "name": "yarsm",
+  "name": "react-concise-state",
   "version": "0.1.0",
   "description": "Yet another react state manager",
   "author": "Dmitrijs Minajevs <dmitrijs.minajevs@outlook.com> (http://dexie.me)",
-  "repository": "https://github.com/minajevs/yarsm",
-  "homepage": "https://github.com/minajevs/yarsm",
+  "repository": "https://github.com/minajevs/react-concise-state",
+  "homepage": "https://github.com/minajevs/react-concise-state",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
