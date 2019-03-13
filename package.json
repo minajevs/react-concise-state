@@ -1,6 +1,6 @@
 {
   "name": "react-concise-state",
-  "version": "0.1.2",
+  "version": "0.1.3-0",
   "description": "Yet another react state manager",
   "author": "Dmitrijs Minajevs <dmitrijs.minajevs@outlook.com> (http://dexie.me)",
   "repository": "https://github.com/minajevs/react-concise-state",
