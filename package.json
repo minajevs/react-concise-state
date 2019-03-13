@@ -9,7 +9,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p .",
-    "test": ""
+    "test": "exit 0"
   },
   "keywords": [
     "react",
