@@ -1,20 +1,13 @@
 import * as React from 'react'
+import { Params, DropFirst } from 'src/helperTypes'
 
-type OptionalSpread<T = undefined> =
-    T extends undefined
-    ? []
-    : [T]
-
-type Action<TState, TPayload extends never = never> =
-    (setState: React.Dispatch<React.SetStateAction<TState>>, payload: TPayload) => void
+type Action<TState, TArgs extends any[]= any, TReturn = void> =
+    (setState: React.Dispatch<React.SetStateAction<TState>>, ...args: TArgs) => TReturn
 
 type Actions<TState> = { [key: string]: Action<TState> }
 
-// Custom Params helper type because existing counterpart "Parameters" uses any instead of never, which is faulsy
-type Params<T extends (...args: never[]) => unknown> = T extends (...args: infer P) => any ? P : never;
-
 type MappedActions<TState, TActions extends Actions<TState>> = {
-    [P in keyof TActions]: (...payload: OptionalSpread<Params<TActions[P]>[1]>) => void
+    [P in keyof TActions]: (...args: DropFirst<Params<TActions[P]>>) => ReturnType<TActions[P]>
 }
 
 type Store<TState, TActions extends Actions<TState>> =
