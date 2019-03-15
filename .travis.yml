@@ -1,0 +1,12 @@
+language: node_js
+branches:
+  only:
+  - master
+cache:
+  directories:
+  - node_modules
+install:
+- npm install
+script:
+- npm test
+- npm run coverage
