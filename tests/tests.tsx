@@ -25,7 +25,7 @@ describe('Test function types', () => {
     })
 
     it('can create action with no arguments', () => {
-        const [context, provider] = createContextState('empty state', {
+        const [context, provider] = createContextState({ foo: '123' }, {
             action: () => { }
         })
 
@@ -62,9 +62,9 @@ describe('Test function types', () => {
         expect(verify.mock.calls.length).toBe(1)
     })
 
-    it('action throws an error if no provider is initialized', () => {
-        const [context, Provider] = createContextState('empty state', {
-            action: () => { }
+    it('setState inside action throws an error if no provider is initialized', () => {
+        const [context, Provider] = createContextState({ foo: 'string' }, {
+            action: ({ setState }) => { setState({ foo: 'new' }) }
         })
 
         const Consumer: React.FC = props => {
@@ -104,28 +104,26 @@ describe('Test function types', () => {
     })
 
     it('can deconstruct reference in action creator', () => {
-        const [context, Provider] = createContextState('empty state', {
+        const [context, Provider] = createContextState({ foo: '1234' }, {
             action1: ({ setState }) => {
                 expect(setState).toBeInstanceOf(Function)
                 verify()
             },
-            /*
             action2: ({ state }) => {
-                expect(typeof state).toBeInstanceOf(Function)
+                expect(state).toBeInstanceOf(Object)
                 verify()
             },
-            */ // TODO: add this test
         })
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
             store.action1()
-            // store.action2()
+            store.action2()
             return <div />
         }
 
         mount(<Provider><Consumer /></Provider>)
-        expect(verify.mock.calls.length).toBe(1)
+        expect(verify.mock.calls.length).toBe(2)
     })
 
     it('can provide arguments to action', () => {
