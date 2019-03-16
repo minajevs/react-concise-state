@@ -45,7 +45,7 @@ type Store<TState, TActions extends Actions<TState>> =
     Logic
 */
 
-export default function createStateContext<TState, TActions extends Actions<TState> = {}>(
+export default function createStoreContext<TState, TActions extends Actions<TState> = {}>(
     initialState: TState,
     actions?: TActions
 ): [React.Context<Store<TState, TActions>>, React.FC] {
