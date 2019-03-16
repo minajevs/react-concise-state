@@ -84,7 +84,7 @@ describe('Test function types', () => {
         const [context, Provider] = createContextState('empty state', {
             action: (reference) => {
                 expect(reference).toHaveProperty('setState')
-                expect(reference).toHaveProperty('useContext')
+                expect(reference).toHaveProperty('state')
                 verify()
             }
         })
@@ -109,21 +109,23 @@ describe('Test function types', () => {
                 expect(setState).toBeInstanceOf(Function)
                 verify()
             },
-            action2: ({ useContext }) => {
-                expect(useContext).toBeInstanceOf(Function)
+            /*
+            action2: ({ state }) => {
+                expect(typeof state).toBeInstanceOf(Function)
                 verify()
             },
+            */ // TODO: add this test
         })
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
             store.action1()
-            store.action2()
+            // store.action2()
             return <div />
         }
 
         mount(<Provider><Consumer /></Provider>)
-        expect(verify.mock.calls.length).toBe(2)
+        expect(verify.mock.calls.length).toBe(1)
     })
 
     it('can provide arguments to action', () => {
@@ -237,8 +239,8 @@ describe('Logic', () => {
         })
 
         const [context2, Provider2] = createContextState({ state2: 'before' }, {
-            action2: ({ useContext }) => {
-                const store = useContext(context1)
+            action2: (_) => {
+                const store = React.useContext(context1)
                 return store.action1()
             },
         })

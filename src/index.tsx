@@ -25,8 +25,8 @@ export type Tail<T> = T extends Array<any>
 */
 
 type ContextReference<TState> = {
+    state: TState
     setState: React.Dispatch<React.SetStateAction<TState>>
-    useContext: <T>(context: React.Context<T>) => T
 }
 
 type Action<TState, TArgs extends never[]= never[], TReturn = any> =
@@ -56,8 +56,8 @@ export default function createStateContext<TState, TActions extends Actions<TSta
         let [_state, setState] = React.useState(initialState)
         const useContext = React.useContext
         const _actions = mapActionsToDispatch({
-            setState,
-            useContext
+            state: _state,
+            setState
         }, actions)
 
         const _store = { ..._state, ..._actions } as Store<TState, TActions>
