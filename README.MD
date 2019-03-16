@@ -5,7 +5,7 @@
 
 > Yet another React state manager
 
-Simple, low-impact state manager for smaller React application. 
+Simple, low-impact state manager for smaller React applications. 
 
 ```tsx
 import createStoreContext from 'react-concise-state';
@@ -54,7 +54,7 @@ const CounterComponent: React.FC = props => {
 * 100% covered with tests, both for logic and typings
 
 ## Intro
-`react-concise-state` born in frustration and fatigue caused by "modern" React state management. Writing hundreds of boilerplate redux code just to support basic feature gets boring quickly. Newer React features such as context and hooks are there to make state simpler, and this package uses it to make state managing in React extremely easy, concise and fun. Reducing boilerplate code to zero is the core concept.
+`react-concise-state` born in frustration and fatigue caused by "modern" React state management. Writing hundreds of boilerplate redux code just to support basic feature gets boring quickly. Newer React features such as context and hooks are there to make state simpler, and this package uses it to make state managing extremely easy, concise and fun. Reducing boilerplate code to zero is the core concept.
 
 ## Installation
 Yarn:
