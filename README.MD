@@ -249,6 +249,35 @@ await store.getTodos()
 
 </p></details>
 
+#### Calling other stores
+Sometimes you would like to call other store action from an action. You can't use `React.useContext` because of specific hook rules in React. Hook amount should never change during runtime and only way to supply that is to initialize all dependency contexts before bootstraping actions.
+
+You can call actions in other stores by providing dependency contexts as a 3rd parameter to `createStoreContext`. Those contexts will be mapped to corresponding stores internally and will be available in `stores` object in `{setState, action, stores}`  argument of action creator.
+
+Example:
+```tsx
+const [todoContext, Provider] = createStoreContext({todos: []}, {
+    addTodo: ({state, setState}, todo) => {
+        setState({todos: [...state.todos, todo]})
+    },
+})
+const [mainContext, Provider] = createStoreContext({message: ''}, {
+    someAction: ({setState, stores}, name) => {
+        const { todos } = stores.todoContext // stores.todoContext is a "todo store" ({todos: [], addTodo: (todo) => void})
+        const newMessage = `Hello, ${name}, you have ${todos.length} todos!`
+        setState({message: newMessage})
+    },
+}, {todoContext})
+...
+// Usage
+const todoStore = React.useContext(todoContext)
+const mainStore = React.useContext(mainContext)
+todoStore.addTodo('buy milk')
+todoStore.addTodo('learn typescript')
+mainStore.someAction('Dmitrijs')
+// mainStore.message is "Hello, Dmitrijs, you have 2 todos!" 
+```
+
 ### TODO:
 * Documentation sections about what benefits does TypeScript gives
 * Full example projects

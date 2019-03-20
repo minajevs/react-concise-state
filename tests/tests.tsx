@@ -231,22 +231,25 @@ describe('Logic', () => {
 
     it('can call other context from action', () => {
         const [context1, Provider1] = createContextState({ state1: 'before' }, {
-            action1: () => {
+            action1: ({ setState }) => {
                 return 'value-from-action1'
             },
         })
 
         const [context2, Provider2] = createContextState({ state2: 'before' }, {
-            action2: (_) => {
-                const store = React.useContext(context1)
-                return store.action1()
+            action2: ({ stores }) => {
+                return stores.context1.action1()
             },
-        })
+        }, { context1 })
 
         const Consumer: React.FC = props => {
-            const store = React.useContext(context2)
+            const store1 = React.useContext(context1)
+            const store2 = React.useContext(context2)
 
-            expect(store.action2()).toBe('value-from-action1')
+            const result = store2.action2()
+
+            //expect(store1.state1).toBe('after')
+            expect(result).toBe('value-from-action1')
 
             verify()
 
