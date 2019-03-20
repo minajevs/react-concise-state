@@ -247,36 +247,6 @@ const result = store.addTodo('buy milk')
 await store.getTodos()
 ```
 
-Actions of one store may call other actions from other stores. It is possible because **all** React hooks work inside actions. 
-
-
-```tsx
-const [todoContext, Provider] = createStoreContext({todos: []}, {
-    addTodo: ({state, setState}, todo) => {
-        setState({todos: [...state.todos, todo]})
-    },
-})
-
-const [mainContext, Provider] = createStoreContext({message: ''}, {
-    someAction: ({setState}, name) => {
-        const todoStore = React.useContext(todoContext)
-        const newMessage = `Hello, ${name}, you have ${todoStore.todos.length} todos!`
-        setState({message: newMessage})
-    },
-})
-
-...
-
-// Usage
-const todoStore = React.useContext(todoContext)
-const mainStore = React.useContext(mainContext)
-
-todoStore.addTodo('buy milk')
-todoStore.addTodo('learn typescript')
-
-mainStore.someAction('Dmitrijs')
-// mainStore.message is "Hello, Dmitrijs, you have 2 todos!" 
-```
 </p></details>
 
 ### TODO:
