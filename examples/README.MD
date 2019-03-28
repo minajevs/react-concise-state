@@ -1,3 +1,4 @@
 # `react-concise-state` examples
 
 * [Simple counter](/examples/counter) | Try it in a [sandbox ✏️](https://codesandbox.io/s/github/minajevs/react-concise-state/tree/master/examples/counter)
+* [Simple todo](/examples/todo) | Compare with [redux implementation](https://redux.js.org/basics/example) | Try it in a [sandbox ✏️](https://codesandbox.io/s/github/minajevs/react-concise-state/tree/master/examples/todo)
