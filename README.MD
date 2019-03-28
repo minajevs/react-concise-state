@@ -8,41 +8,41 @@
 Simple, low-impact state manager for smaller React applications. 
 
 ```tsx
-import createStoreContext from 'react-concise-state';
+import createStoreContext from "react-concise-state";
 
 // 1️⃣ create a store context providing initial state and an actions
 const [context, Provider] = createStoreContext({
     counter: 0
 }, {
     // 👇 actions modify state using provided `setState`
-    incrementBy: ({state, setState}, increment: number) => { 
-        const newValue = state.counter + increment
-        setState({ counter: newValue })
+    incrementBy: ({ state, setState }, increment: number) => {
+      const newValue = state.counter + increment
+      setState({ counter: newValue })
     },
-    reset: ({setState}) => setState({ counter: 0 })
+    reset: ({ setState }) => setState({ counter: 0 })
 })
 
 // 2️⃣ wrap component in created provider
 const App = props => {
   return <Provider>
-    <CounterComponent />
-  </Provider>
+      <CounterComponent />
+    </Provider>
 }
 
 // 3️⃣ hook context in consumer to use generated store
 const CounterComponent: React.FC = props => {
   const store = React.useContext(context)
   // 👇 generated store contains both the state and actions to call
-  const increment = store.incrementBy(1)
-  const decrement = store.incrementBy(-1)
+  const onIncrement = () => store.incrementBy(1)
+  const onDecrement = () => store.incrementBy(-1)
   return <div>
-    <h2>Counter: {store.counter}</h2>
-    <hr />
-    <button onClick={increment}>Increment</button>
-    <button onClick={decrement}>Decrement</button>
+      <h2>Counter: {store.counter}</h2>
+      <hr />
+      <button onClick={onIncrement}>Increment</button>
+      <button onClick={onDecrement}>Decrement</button>
 
-    <button onClick={store.reset}>Reset</button>
-  </div>
+      <button onClick={store.reset}>Reset</button>
+    </div>
 }
 ```
 
@@ -69,7 +69,7 @@ Make sure you are using recent React version (>=16.8.0) because it works best wi
 If you are using TypeScript, some of the types might default to `any` on version <3.2 because of a bug with tuple types.
 
 ## Examples
-> TODO
+[⭐️Click here to see usage examples⭐️](/react-concise-state/tree/master/examples/)
 
 ---
 
