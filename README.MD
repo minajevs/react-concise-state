@@ -69,7 +69,7 @@ Make sure you are using recent React version (>=16.8.0) because it works best wi
 If you are using TypeScript, some of the types might default to `any` on version <3.2 because of a bug with tuple types.
 
 ## Examples
-[⭐️Click here to see usage examples⭐️](//examples/)
+[⭐️Click here to see usage examples⭐️](/examples)
 
 ---
 
