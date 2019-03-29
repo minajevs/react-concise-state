@@ -280,5 +280,4 @@ mainStore.someAction('Dmitrijs')
 
 ### TODO:
 * Documentation sections about what benefits does TypeScript gives
-* OSS stuff (license, how to contribute, ....)
 * API docs (arguments, types, etc...)
