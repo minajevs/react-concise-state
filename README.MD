@@ -278,6 +278,8 @@ mainStore.someAction('Dmitrijs')
 // mainStore.message is "Hello, Dmitrijs, you have 2 todos!" 
 ```
 
+### Docs
+[📖 Read full api reference and docs by clicking here 📖](//google.com)
+
 ### TODO:
 * Documentation sections about what benefits does TypeScript gives
-* API docs (arguments, types, etc...)

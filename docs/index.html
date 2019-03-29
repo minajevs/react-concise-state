@@ -1,0 +1,382 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>react-concise-state</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">react-concise-state</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> react-concise-state</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="react-concise-state">react-concise-state</h1>
+				<p><a href="http://npm.im/react-concise-state"><img src="https://img.shields.io/npm/v/react-concise-state.svg?style=flat-square" alt="npm"></a>
+					<a href="https://travis-ci.org/minajevs/react-concise-state"><img src="https://img.shields.io/travis/minajevs/react-concise-state.svg?style=flat-square" alt="Travis"></a>
+				<a href="https://codecov.io/github/minajevs/react-concise-state"><img src="https://img.shields.io/codecov/c/github/minajevs/react-concise-state.svg?style=flat-square" alt="Codecov"></a></p>
+				<blockquote>
+					<p>Yet another React state manager</p>
+				</blockquote>
+				<p>Simple, low-impact state manager for smaller React applications. </p>
+				<pre><code class="language-tsx">import createStoreContext from &quot;react-concise-state&quot;;
+
+// 1️⃣ create a store context providing initial state and an actions
+const [context, Provider] = createStoreContext({
+    counter: 0
+}, {
+    // 👇 actions modify state using provided `setState`
+    incrementBy: ({ state, setState }, increment: number) =&gt; {
+      const newValue = state.counter + increment
+      setState({ counter: newValue })
+    },
+    reset: ({ setState }) =&gt; setState({ counter: 0 })
+})
+
+// 2️⃣ wrap component in created provider
+const App = props =&gt; {
+  return &lt;Provider&gt;
+      &lt;CounterComponent /&gt;
+    &lt;/Provider&gt;
+}
+
+// 3️⃣ hook context in consumer to use generated store
+const CounterComponent: React.FC = props =&gt; {
+  const store = React.useContext(context)
+  // 👇 generated store contains both the state and actions to call
+  const onIncrement = () =&gt; store.incrementBy(1)
+  const onDecrement = () =&gt; store.incrementBy(-1)
+  return &lt;div&gt;
+      &lt;h2&gt;Counter: {store.counter}&lt;/h2&gt;
+      &lt;hr /&gt;
+      &lt;button onClick={onIncrement}&gt;Increment&lt;/button&gt;
+      &lt;button onClick={onDecrement}&gt;Decrement&lt;/button&gt;
+
+      &lt;button onClick={store.reset}&gt;Reset&lt;/button&gt;
+    &lt;/div&gt;
+}</code></pre>
+				<h2 id="features">Features</h2>
+				<ul>
+					<li>Quick and extremely easy to use </li>
+					<li>Integrates into general React workflow. Uses contexts, state and hooks </li>
+					<li>Low impact. <a href="https://bundlephobia.com/result?p=react-concise-state@0.3.0">&lt;1kB gziped</a></li>
+					<li>Written in TypeScript</li>
+					<li>100% covered with tests, both for logic and typings</li>
+				</ul>
+				<h2 id="intro">Intro</h2>
+				<p><code>react-concise-state</code> born in frustration and fatigue caused by &quot;modern&quot; React state management. Writing hundreds of boilerplate redux code just to support basic feature gets boring quickly. Newer React features such as context and hooks are there to make state simpler, and this package uses it to make state managing extremely easy, concise and fun. Reducing boilerplate code to zero is the core concept.</p>
+				<h2 id="installation">Installation</h2>
+				<p>Yarn:
+				<code>yarn add react-concise-state</code></p>
+				<p>NPM:
+				<code>npm install react-concise-state</code></p>
+				<p>Make sure you are using recent React version (&gt;=16.8.0) because it works best with it. </p>
+				<blockquote>
+					<p>support of React &gt;= 16.3.0 is possible. Should it be implemented?</p>
+				</blockquote>
+				<p>If you are using TypeScript, some of the types might default to <code>any</code> on version &lt;3.2 because of a bug with tuple types.</p>
+				<h2 id="examples">Examples</h2>
+				<p><a href="/examples">⭐️Click here to see usage examples⭐️</a></p>
+				<hr>
+				<h2 id="core-concepts">Core Concepts</h2>
+				<p>Below you can find an introduction to the core core concepts of <code>react-concise-state</code>. You will find basic step-by-step walkthrough how to use this package.</p>
+				<h3 id="createstorecontext-creating-store-context"><code>createStoreContext</code> - creating store context</h3>
+				<p>Application or application part state can be represented as a plain JavaScript object. For example Counter component state can be defined with such object.</p>
+				<pre><code class="language-tsx">const state = {
+    counter: 0
+}</code></pre>
+				<p>Now you create a store context. </p>
+				<pre><code class="language-tsx">import createStoreContext from &#39;react-concise-state&#39;
+
+const [context, Provider] = createStoreContext(state)</code></pre>
+				<p><code>context</code> and <code>Provider</code> are created which you can use in your application to access created store. </p>
+				<h4 id="context-consuming-created-context"><code>context</code> - consuming created context</h4>
+				<p><code>context</code> is <code>React.Context</code>, so you can use its <code>Consumer</code> property <a href="https://reactjs.org/docs/context.html#contextconsumer">as you would normally use React Consumer</a>, or instead <a href="https://reactjs.org/docs/hooks-reference.html#usecontext">you can use hooks API.</a></p>
+				<details><summary>Examples (click to expand)</summary><p>
+						<p>Component API</p>
+						<pre><code class="language-tsx">const Counter = props =&gt; &lt;context.Consumer&gt; {store =&gt;
+    &lt;h1&gt;Current counter: {store.counter}&lt;/h1&gt;
+} &lt;/context.Consumer&gt;</code></pre>
+						<p>Hooks API</p>
+						<pre><code class="language-tsx">const Counter = props =&gt; {
+    const store = React.useContext(context)
+    return &lt;h1&gt;Current counter: {store.counter}&lt;/h1&gt;
+}</code></pre>
+				</p></details>
+				<p><code>Provider</code> is a context provider which you should wrap your store consuming components into. </p>
+				<details><summary>Examples (click to expand)</summary><p>
+						<pre><code class="language-tsx">const App = props =&gt; {
+    return &lt;Provider&gt;
+        &lt;Counter /&gt;
+    &lt;/Provider&gt;
+}</code></pre>
+						<p>Note that there should only be one provider for 1 instance of state and consumers might not be the first or only descenders of provider.</p>
+						<pre><code class="language-tsx">const App = props =&gt; {
+    return &lt;Provider&gt;
+        &lt;div&gt;
+            &lt;Counter /&gt; 
+        &lt;/div&gt;
+        &lt;div&gt;
+            &lt;div&gt;
+                &lt;OtherCounterWithSameState /&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/Provider&gt;
+}</code></pre>
+				</p></details>
+				<h4 id="actions-modifying-state"><code>actions</code> - modifying state</h4>
+				<p>Usually having plain state does not make any sense. There should be some way to modify it. React provides powerfull <code>setState</code> to do that, however using <code>setState</code> for common state on many child components is dangerous and is generally a bad idea. Flux architecture (redux) solves it by defining actions - a contracts telling how it is possible to mutate state, and then defining reducers, sagas, thunks, middleware etc. to actually mutate it. In <code>react-concise-state</code> all those concepts are combined into one in a terse and fluent way. </p>
+				<p><code>actions</code> in <code>react-concise-state</code> are plain JavaScript methods which you can call from consumer components to modify current state. Those actions</p>
+				<ul>
+					<li>Define state mutation contract between store and consumers</li>
+					<li>Use native for React <code>setState</code></li>
+					<li>May or may not have a payload</li>
+					<li>May or may not return a value</li>
+					<li>May be async</li>
+					<li>May call other stores</li>
+					<li>May be written in functional &amp; immutable approach or in imperative approach</li>
+				</ul>
+				<p>To create store action in <code>react-concise-state</code> provide a second argument to <code>createStoreContext</code> - an object where object keys are action names and values are actions themselves.</p>
+				<p>Basic examples:</p>
+				<pre><code class="language-tsx">// Imperative
+const actions = {
+    someAction: ({state, setState}, payload) =&gt; {
+        const newState = ... // do something
+        setState(newState)
+    }
+}
+
+// Functional
+const actions = {
+    someAction: ({setState}, payload) =&gt; setState(prev =&gt; { ..prev, /* do something */})
+}
+
+// Create store
+createStoreContext(state, actions)</code></pre>
+				<p>Those actions will be transformed to store actions which you can call from consumers. In consumers only <code>payload</code> is required argument. Calling this store action will execute the action. <code>{state, setState}</code> wil have real values from provider.</p>
+				<p>Basic usage examples:</p>
+				<pre><code class="language-tsx">const store = React.useContext(context)
+
+store.someAction(&#39;this is a payload string&#39;)</code></pre>
+				<details><summary>Advanced (click to expand)</summary><p>
+						<p>Payload for actions is optional. There could be any amount of payload arguments. </p>
+						<pre><code class="language-tsx">const [context, Provider] = createStoreContext({counter: 0}, {
+    // No payload
+    increment: ({state, setState}) = setState({counter: ++state.counter}),
+    // If you are using functional style you can also get current state inside `setState` using callback function
+    decrement: ({setState}) =&gt; setState(state =&gt; ({counter: --state.counter})),
+
+    // With payload
+    setValue: ({setState}, value) =&gt; setState({counter: value}),
+    setValueIfMoreThan: ({state, setState}, value, limit) =&gt; {
+        if(state.counter &gt; limit)
+            setState({counter: value})
+    }
+})
+
+...
+
+// Usage
+const store = React.useContext(context)
+
+store.increment()
+// &gt; store.counter is 1
+
+store.decrement()
+// &gt; store.counter is 0
+
+store.setValue(10)
+// &gt; store.counter is 10
+
+store.setValueIfMoreThan(9, 1)
+// &gt; store.counter is 1</code></pre>
+						<p>You can get return value from actions. It also enabled awaiting async actions.</p>
+						<pre><code class="language-tsx">const [context, Provider] = createStoreContext({todos: []}, {
+    // Returning a value
+    addTodo: ({setState}, todo) =&gt; {
+        const result = Api.addTodo(todo)
+        return result
+    },
+    // Getting todos asynchronously
+    getTodos: async ({setState}) =&gt; {
+        const todos = await Api.getTodos()
+        setState({todos})
+    }
+})
+
+...
+
+// Usage
+const store = React.useContext(context)
+
+const result = store.addTodo(&#39;buy milk&#39;)
+
+await store.getTodos()</code></pre>
+				</p></details>
+				<h4 id="calling-other-stores">Calling other stores</h4>
+				<p>Sometimes you would like to call other store action from an action. You can&#39;t use <code>React.useContext</code> because of specific hook rules in React. Hook amount should never change during runtime and only way to supply that is to initialize all dependency contexts before bootstraping actions.</p>
+				<p>You can call actions in other stores by providing dependency contexts as a 3rd parameter to <code>createStoreContext</code>. Those contexts will be mapped to corresponding stores internally and will be available in <code>stores</code> object in <code>{setState, action, stores}</code>  argument of action creator.</p>
+				<p>Example:</p>
+				<pre><code class="language-tsx">const [todoContext, Provider] = createStoreContext({todos: []}, {
+    addTodo: ({state, setState}, todo) =&gt; {
+        setState({todos: [...state.todos, todo]})
+    },
+})
+const [mainContext, Provider] = createStoreContext({message: &#39;&#39;}, {
+    someAction: ({setState, stores}, name) =&gt; {
+        const { todos } = stores.todoContext // stores.todoContext is a &quot;todo store&quot; ({todos: [], addTodo: (todo) =&gt; void})
+        const newMessage = `Hello, ${name}, you have ${todos.length} todos!`
+        setState({message: newMessage})
+    },
+}, {todoContext})
+...
+// Usage
+const todoStore = React.useContext(todoContext)
+const mainStore = React.useContext(mainContext)
+todoStore.addTodo(&#39;buy milk&#39;)
+todoStore.addTodo(&#39;learn typescript&#39;)
+mainStore.someAction(&#39;Dmitrijs&#39;)
+// mainStore.message is &quot;Hello, Dmitrijs, you have 2 todos!&quot; </code></pre>
+				<h3 id="todo-">TODO:</h3>
+				<ul>
+					<li>Documentation sections about what benefits does TypeScript gives</li>
+					<li>API docs (arguments, types, etc...)</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_index_.html">"index"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

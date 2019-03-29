@@ -4,52 +4,92 @@ import * as React from 'react'
     Custom Helper types
 */
 
-// Custom Params helper type because existing counterpart "Parameters" uses any instead of never, which is faulsy
-export type Params<T extends (...args: never[]) => unknown> = T extends (...args: infer P) => any ? P : never;
+/** 
+ * Custom Params helper type because existing counterpart "Parameters" uses any instead of never, which is faulsy
+ * @typeparam T any function in the form (...args: P[]) => any
+ * @returns typeof params (P)
+ */
+type Params<T extends (...args: never[]) => unknown> = T extends (...args: infer P) => any ? P : never;
 
-// Custom RetType helper type because existing counterpart "ReturnType" uses any instead of never, which is faulsy
-export type RetType<T extends (...args: never[]) => unknown> = T extends (...args: never[]) => infer R ? R : any;
+/**
+ * Custom RetType helper type because existing counterpart "ReturnType" uses any instead of never, which is faulsy
+ * @typeparam T any function in the form (...args: any[]) => R
+ * @returns typeof return value (R)
+ */
+type RetType<T extends (...args: never[]) => unknown> = T extends (...args: never[]) => infer R ? R : any;
 
-// For [First, ...Rest] tuple gets [Rest] tuple
-export type DropFirst<T extends any[]> =
+/**
+ * For [First, ...Rest] tuple gets [Rest] tuple
+ * @typeparam T any tuple of any length  (might as well be an array) in the form [First, ...Rest]
+ * @returns everything in the tuple except for the first member (Rest)
+ */
+type DropFirst<T extends any[]> =
     ((...args: T) => any) extends (arg: any, ...rest: infer U) => any[] ? U : T;
-
-export type Tail<T> = T extends Array<any>
-    ? ((...args: T) => never) extends ((a: any, ...args: infer R) => never)
-    ? R
-    : never
-    : never
 
 /*
     API Types
 */
 
+/**
+ * Special context reference object which will be provided to the action as the first argument
+ */
 type ContextReference<TState, TContexts extends Contexts> = {
     state: TState
     setState: React.Dispatch<React.SetStateAction<TState>>
     stores: InferStores<TContexts>
 }
 
+/**
+ * Action creator which will resolve correct [[ContextReference]] type and map argument types correctly
+ */
 type Action<TState, TContexts extends Contexts, TArgs extends never[]= never[], TReturn = any> =
     (contextReference: ContextReference<TState, TContexts>, ...args: TArgs) => TReturn
 
+/**
+ * Dictionary of action creators [[Action]] in the form { key: actionCreator }
+ * 
+ * Every entry will be mapped to a store action [[MappedActions]]
+ */
 type Actions<TState, TContexts extends Contexts> = { [key: string]: Action<TState, TContexts> }
 
+/**
+ * Dictionary of store actions in the form { key: action }
+ */
 type MappedActions<TState, TContexts extends Contexts, TActions extends Actions<TState, TContexts>> = {
     [P in keyof TActions]: (...args: DropFirst<Params<TActions[P]>>) => RetType<TActions[P]>
 }
 
+/**
+ * Store as an intersection of TState and [[MappedActions]] 
+ */
 type Store<TState, TContexts extends Contexts, TActions extends Actions<TState, TContexts>> =
     TActions extends undefined ? TState : TState & MappedActions<TState, TContexts, TActions>
 
+/**
+ * React.Context wrapper to predefault context type to any.
+ * 
+ * Is necessary to use this type as generic constraint in generic types
+ */
 type Context<T = any> = React.Context<T>
+
+/**
+ * [[Context]] dictionary 
+ */
 type Contexts = { [key: string]: Context }
 
-export type Params1<T extends (...args: never[]) => unknown> = T extends (...args: infer P) => any ? P : never;
-
+/**
+ * Infering React.Context type
+ * @typeparam TContext React.Context<S>
+ * @returns S
+ */
 type InferStore<TContext extends React.Context<any>> =
     TContext extends React.Context<infer TStore> ? TStore : never
 
+/**
+ * Infering React.Context type for dictionary of contexts [[Contexts]]
+ * @typeparam TContexts { key: React.Context<keyS> }
+ * @returns dictionary { key: keyS } 
+ */
 type InferStores<TContexts extends Contexts> = {
     [P in keyof TContexts]: InferStore<TContexts[P]>
 }
@@ -57,6 +97,51 @@ type InferStores<TContexts extends Contexts> = {
     Logic
 */
 
+/**
+ * Creates react context with state store. Store consists of state properties and actions which modify it.
+ * @param initialState initial state
+ * 
+ * @param actions a dictionary (key-value object) of action creators for a given store. Actions might have arguments, can modify state and return values.
+ * Action creator as a first argument receives special [[ContextReference]] object, which has:
+ * * `setState` method to modify state
+ * * `state` object to access current state of type 
+ * * `stores` object to access injected store contexts
+ * 
+ * Any other argument in action creator will be converted to action parameter, which user must provide when calling action.
+ * 
+ * Example: 
+ * * Action creator: 
+ * ```typescript
+ * actionName: (reference, payload: string) => { 
+ *      reference.setState({whatever: payload}) 
+ * }
+ * ```
+ * * Action: 
+ * ```typescript
+ * store.actionName("Hello world")
+ * ```
+ * 
+ * @param contexts a dictionary (key-value object) of injected store contexts. Those stores will be resolved and passed to actions in `stores` property of [[ContextReference]]
+ * 
+ * Example:
+ * ```typescript
+ * createStoreContext({foo: '123'}, {
+ *  action: (reference) => {
+ *      reference.stores.bar.someBarAction()
+ *      return reference.stores.bar.someBarProperty
+ *  }
+ * }, {
+ *  bar: barContext
+ * })
+ * ```
+ * 
+ * @typeparam TState any JS object representing application or application part state 
+ * @typeparam TActions a dictionary (key-value object) of action creators
+ * @typeparam TContexts a dictionary (key-value object) of injected store contexts
+ * 
+ * @returns [context, Provider] tuple, where context is [[React.Context]] and should be consumed to access store, 
+ * and Provider is [[React.FC]] (functional component) without props, which enables store actions for any nested components
+ */
 export default function createStoreContext<
     TState,
     TActions extends Actions<TState, TContexts> = {},
@@ -100,6 +185,9 @@ export default function createStoreContext<
     return [context, provider]
 }
 
+/**
+ * @hidden internal function to map action creators to store actions
+ */
 function mapActionsToDispatch<TState, TContexts extends Contexts, TActions extends Actions<TState, TContexts>>(
     contextReference: ContextReference<TState, TContexts>,
     actions?: TActions,
@@ -115,6 +203,9 @@ function mapActionsToDispatch<TState, TContexts extends Contexts, TActions exten
         {} as MappedActions<TState, TContexts, TActions>)
 }
 
+/**
+ * @hidden internal function to map action creators to store actions when there are no Providers available
+ */
 function mapActionsToDefault<TState,
     TActions extends Actions<TState, TContexts>,
     TContexts extends Contexts
