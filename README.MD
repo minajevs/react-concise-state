@@ -279,7 +279,7 @@ mainStore.someAction('Dmitrijs')
 ```
 
 ### Docs
-[📖 Read full api reference and docs by clicking here 📖](//google.com)
+[📖 Read full api reference and docs by clicking here 📖](https://minajevs.github.io/react-concise-state/)
 
 ### TODO:
 * Documentation sections about what benefits does TypeScript gives
