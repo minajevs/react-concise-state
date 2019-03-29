@@ -278,8 +278,10 @@ mainStore.someAction('Dmitrijs')
 // mainStore.message is "Hello, Dmitrijs, you have 2 todos!" 
 ```
 
-### Docs
+## Docs
 [📖 Read full api reference and docs by clicking here 📖](https://minajevs.github.io/react-concise-state/)
+
+---
 
 ### TODO:
 * Documentation sections about what benefits does TypeScript gives
