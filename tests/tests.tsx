@@ -173,6 +173,14 @@ describe('Test function types', () => {
         mount(<Provider><Consumer /></Provider>)
         expect(verify.mock.calls.length).toBe(1)
     })
+
+    it('can provide just state type', () => {
+        type State = {
+            foo: string
+        }
+
+        const [context, Provider] = createContextState<State>({ foo: '' })
+    })
 })
 
 describe('Logic', () => {

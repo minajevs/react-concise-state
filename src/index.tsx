@@ -59,13 +59,13 @@ type InferStores<TContexts extends Contexts> = {
 
 export default function createStoreContext<
     TState,
-    TContexts extends Contexts,
     TActions extends Actions<TState, TContexts> = {},
-    >(
-        initialState: TState,
-        actions: TActions = {} as TActions,
-        contexts: TContexts = {} as TContexts
-    ): [React.Context<Store<TState, TContexts, TActions>>, React.FC] {
+    TContexts extends Contexts = {}
+>(
+    initialState: TState,
+    actions: TActions = {} as TActions,
+    contexts: TContexts = {} as TContexts
+): [React.Context<Store<TState, TContexts, TActions>>, React.FC] {
     // tslint:disable-next-line: max-line-length
     const store = { ...initialState, ...mapActionsToDefault(initialState, actions) } as Store<TState, TContexts, TActions>
     const context = React.createContext(store)
