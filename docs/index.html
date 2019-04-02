@@ -288,11 +288,31 @@ todoStore.addTodo(&#39;buy milk&#39;)
 todoStore.addTodo(&#39;learn typescript&#39;)
 mainStore.someAction(&#39;Dmitrijs&#39;)
 // mainStore.message is &quot;Hello, Dmitrijs, you have 2 todos!&quot; </code></pre>
-				<h3 id="todo-">TODO:</h3>
-				<ul>
-					<li>Documentation sections about what benefits does TypeScript gives</li>
-					<li>API docs (arguments, types, etc...)</li>
-				</ul>
+				<h2 id="typescript">TypeScript</h2>
+				<p>This library is written in TypeScript and leverages its type system to the fullest. One of the main goals of this library is to provide type-safe state management with minimum (almost zero) boilerplate code.   </p>
+				<details><summary>Why most libraries fail on this</summary><p>
+						TypeScript is really powerful. It's type system is so flexible yet so smart ([turing-complete smart](https://github.com/Microsoft/TypeScript/issues/14833)) that it is a shame very few developers and libraries use it to the fullest.
+						<p>TypeScript is able to infer and calculate most of the types itself, yet libraries still require developers to write interfaces, implement contracts, provide types for every single bit of functionality. TypeScript should guide towards correct implementation, not hinder from incorrect one.</p>
+						<p>You can use this library without writing any type and you will still have perfect type-safety and type-correctness. Types will be automatically resolved and given to you so you are safe about your implementation.  </p>
+				</p></details>
+				<h3 id="how-types-in-this-library-work">How types in this library work</h3>
+				<h4 id="1-initialstate">1. <code>initialState</code></h4>
+				<p>When creating a new store context initial state could be anything. Resulting state will be infered from provided <code>initialState</code>
+				<img src="/assets/initial-state-infered.gif" alt="Initial state infered demo"></p>
+				<p>You can also provide <code>TState</code> type to constrain initial state or narrow state types.
+				<img src="/assets/initial-state-constrained.gif" alt="Initial state constrained demo"></p>
+				<h4 id="2-actions">2. <code>actions</code></h4>
+				<p>When creating store actions you will be provided with correct types for current <code>state</code>, <code>setState</code> method and <code>stores</code> object.
+				<img src="/assets/action-types-provided.gif" alt="Action types provided demo"></p>
+				<h4 id="3-mapped-actions">3. Mapped actions</h4>
+				<p>After describing your store with <code>createStoreContext</code> you will be possible to resolve store using <code>React.useContext</code> hook. Resulting store will be an intersection of <code>state</code>and mapped actions.
+					You can set additional action arguments and return any value. Mapped action will infer all of that and provide it to you.
+				<img src="/assets/mapped-action-types.gif" alt="Action types provided demo"></p>
+				<h2 id="docs">Docs</h2>
+				<p><a href="https://minajevs.github.io/react-concise-state/">📖 Read full api reference and docs by clicking here 📖</a></p>
+				<hr>
+				<p>MIT License
+				Copyright (C) Dmitrijs Minajevs <a href="mailto:dmitrijs.minajevs@outlook.com">dmitrijs.minajevs@outlook.com</a>.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
