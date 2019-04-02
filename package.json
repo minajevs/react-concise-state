@@ -15,7 +15,7 @@
     "test": "./node_modules/.bin/jest --collectCoverage",
     "test:watch": "./node_modules/.bin/jest --watch",
     "coverage": "./node_modules/.bin/codecov",
-    "docs": "./node_modules/.bin/typedoc --readme README.md --name react-concise-state --out ./docs/ --tsconfig tsconfig.json --excludePrivate --excludeExternals",
+    "docs": "./node_modules/.bin/typedoc --readme README.md --name react-concise-state --out ./docs/ --tsconfig tsconfig.json --excludePrivate --excludeExternals && echo > ./docs/.nojekyll",
     "prepublish": "./node_modules/.bin/rimraf docs && ./node_modules/.bin/rimraf dist && yarn run test && yarn run build && yarn run docs"
   },
   "keywords": [

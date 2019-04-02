@@ -297,17 +297,17 @@ mainStore.someAction(&#39;Dmitrijs&#39;)
 				</p></details>
 				<h3 id="how-types-in-this-library-work">How types in this library work</h3>
 				<h4 id="1-initialstate">1. <code>initialState</code></h4>
-				<p>When creating a new store context initial state could be anything. Resulting state will be infered from provided <code>initialState</code>
-				<img src="/assets/initial-state-infered.gif" alt="Initial state infered demo"></p>
-				<p>You can also provide <code>TState</code> type to constrain initial state or narrow state types.
-				<img src="/assets/initial-state-constrained.gif" alt="Initial state constrained demo"></p>
+				<p>When creating a new store context initial state could be anything. Resulting state will be infered from provided <code>initialState</code></p>
+				<p><img src="/assets/initial-state-infered.gif" alt="Initial state infered demo"></p>
+				<p>You can also provide <code>TState</code> type to constrain initial state or narrow state types.</p>
+				<p><img src="/assets/initial-state-constrained.gif" alt="Initial state constrained demo"></p>
 				<h4 id="2-actions">2. <code>actions</code></h4>
-				<p>When creating store actions you will be provided with correct types for current <code>state</code>, <code>setState</code> method and <code>stores</code> object.
-				<img src="/assets/action-types-provided.gif" alt="Action types provided demo"></p>
+				<p>When creating store actions you will be provided with correct types for current <code>state</code>, <code>setState</code> method and <code>stores</code> object. </p>
+				<p><img src="/assets/action-types-provided.gif" alt="Action types provided demo"></p>
 				<h4 id="3-mapped-actions">3. Mapped actions</h4>
 				<p>After describing your store with <code>createStoreContext</code> you will be possible to resolve store using <code>React.useContext</code> hook. Resulting store will be an intersection of <code>state</code>and mapped actions.
-					You can set additional action arguments and return any value. Mapped action will infer all of that and provide it to you.
-				<img src="/assets/mapped-action-types.gif" alt="Action types provided demo"></p>
+				You can set additional action arguments and return any value. Mapped action will infer all of that and provide it to you.</p>
+				<p><img src="/assets/mapped-action-types.gif" alt="Action types provided demo"></p>
 				<h2 id="docs">Docs</h2>
 				<p><a href="https://minajevs.github.io/react-concise-state/">📖 Read full api reference and docs by clicking here 📖</a></p>
 				<hr>
