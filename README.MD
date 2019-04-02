@@ -293,18 +293,22 @@ You can use this library without writing any type and you will still have perfec
 
 #### 1. `initialState` 
 When creating a new store context initial state could be anything. Resulting state will be infered from provided `initialState`
+
 ![Initial state infered demo](/assets/initial-state-infered.gif)
 
 You can also provide `TState` type to constrain initial state or narrow state types.
+
 ![Initial state constrained demo](/assets/initial-state-constrained.gif)
 
 #### 2. `actions`
 When creating store actions you will be provided with correct types for current `state`, `setState` method and `stores` object. 
+
 ![Action types provided demo](/assets/action-types-provided.gif)
 
 #### 3. Mapped actions
 After describing your store with `createStoreContext` you will be possible to resolve store using `React.useContext` hook. Resulting store will be an intersection of `state`and mapped actions.
 You can set additional action arguments and return any value. Mapped action will infer all of that and provide it to you.
+
 ![Action types provided demo](/assets/mapped-action-types.gif)
 
 ## Docs
