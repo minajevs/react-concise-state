@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import createContextState from '../src/index'
+import createStoreContext from '../src/index'
 import { mount } from 'enzyme';
 
 describe('Test function types', () => {
@@ -12,20 +12,20 @@ describe('Test function types', () => {
     })
 
     it('return is tuple of React.Context and React.FC (provider)', () => {
-        const result = createContextState('empty state')
+        const result = createStoreContext('empty state')
         expect(result.length).toBe(2)
     })
 
     it('can create empty actions', () => {
-        createContextState('empty state', {
+        createStoreContext('empty state', {
 
         })
 
-        createContextState('empty state', undefined)
+        createStoreContext('empty state', undefined)
     })
 
     it('can create action with no arguments', () => {
-        const [context, provider] = createContextState({ foo: '123' }, {
+        const [context, provider] = createStoreContext({ foo: '123' }, {
             action: () => { }
         })
 
@@ -44,7 +44,7 @@ describe('Test function types', () => {
     })
 
     it('can create action with no return value', () => {
-        const [context, Provider] = createContextState('empty state', {
+        const [context, Provider] = createStoreContext('empty state', {
             action: () => { }
         })
 
@@ -63,7 +63,7 @@ describe('Test function types', () => {
     })
 
     it('setState inside action throws an error if no provider is initialized', () => {
-        const [context, Provider] = createContextState({ foo: 'string' }, {
+        const [context, Provider] = createStoreContext({ foo: 'string' }, {
             action: ({ setState }) => { setState({ foo: 'new' }) }
         })
 
@@ -81,7 +81,7 @@ describe('Test function types', () => {
     })
 
     it('can create action with context reference', () => {
-        const [context, Provider] = createContextState('empty state', {
+        const [context, Provider] = createStoreContext('empty state', {
             action: (reference) => {
                 expect(reference).toHaveProperty('setState')
                 expect(reference).toHaveProperty('state')
@@ -104,7 +104,7 @@ describe('Test function types', () => {
     })
 
     it('can deconstruct reference in action creator', () => {
-        const [context, Provider] = createContextState({ foo: '1234' }, {
+        const [context, Provider] = createStoreContext({ foo: '1234' }, {
             action1: ({ setState }) => {
                 expect(setState).toBeInstanceOf(Function)
                 verify()
@@ -127,7 +127,7 @@ describe('Test function types', () => {
     })
 
     it('can provide arguments to action', () => {
-        const [context, Provider] = createContextState({ foo: '' }, {
+        const [context, Provider] = createStoreContext({ foo: '' }, {
             action1: (_, numberArg: number) => {
                 expect(typeof numberArg).toBe('number')
                 verify()
@@ -152,7 +152,7 @@ describe('Test function types', () => {
     })
 
     it('can return value from action', () => {
-        const [context, Provider] = createContextState({ foo: '' }, {
+        const [context, Provider] = createStoreContext({ foo: '' }, {
             actionNumber: () => {
                 return 123
             },
@@ -179,7 +179,7 @@ describe('Test function types', () => {
             foo: string
         }
 
-        const [context, Provider] = createContextState<State>({ foo: '' })
+        const [context, Provider] = createStoreContext<State>({ foo: '' })
     })
 })
 
@@ -192,7 +192,7 @@ describe('Logic', () => {
     })
 
     it('can provide arguments to action', () => {
-        const [context, Provider] = createContextState({ foo: '' }, {
+        const [context, Provider] = createStoreContext({ foo: '' }, {
             action: (_, stringArg: string, numberArg: number, booleanArg: boolean) => {
                 expect(stringArg).toBe('123')
                 expect(numberArg).toBe(456)
@@ -212,7 +212,7 @@ describe('Logic', () => {
     })
 
     it('can modify state from action', () => {
-        const [context, Provider] = createContextState({ foo: 'before' }, {
+        const [context, Provider] = createStoreContext({ foo: 'before' }, {
             action: ({ setState }) => setState(prev => {
                 if (prev.foo === 'before')
                     return { foo: 'after' }
@@ -238,13 +238,13 @@ describe('Logic', () => {
 
 
     it('can call other context from action', () => {
-        const [context1, Provider1] = createContextState({ state1: 'before' }, {
+        const [context1, Provider1] = createStoreContext({ state1: 'before' }, {
             action1: ({ setState }) => {
                 return 'value-from-action1'
             },
         })
 
-        const [context2, Provider2] = createContextState({ state2: 'before' }, {
+        const [context2, Provider2] = createStoreContext({ state2: 'before' }, {
             action2: ({ stores }) => {
                 return stores.context1.action1()
             },

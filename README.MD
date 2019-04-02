@@ -278,10 +278,39 @@ mainStore.someAction('Dmitrijs')
 // mainStore.message is "Hello, Dmitrijs, you have 2 todos!" 
 ```
 
+## TypeScript
+This library is written in TypeScript and leverages its type system to the fullest. One of the main goals of this library is to provide type-safe state management with minimum (almost zero) boilerplate code.   
+
+<details><summary>Why most libraries fail on this</summary><p>
+TypeScript is really powerful. It's type system is so flexible yet so smart ([turing-complete smart](https://github.com/Microsoft/TypeScript/issues/14833)) that it is a shame very few developers and libraries use it to the fullest.
+
+TypeScript is able to infer and calculate most of the types itself, yet libraries still require developers to write interfaces, implement contracts, provide types for every single bit of functionality. TypeScript should guide towards correct implementation, not hinder from incorrect one.
+
+You can use this library without writing any type and you will still have perfect type-safety and type-correctness. Types will be automatically resolved and given to you so you are safe about your implementation.  
+</p></details>
+
+### How types in this library work
+
+#### 1. `initialState` 
+When creating a new store context initial state could be anything. Resulting state will be infered from provided `initialState`
+![Initial state infered demo](/assets/initial-state-infered.gif)
+
+You can also provide `TState` type to constrain initial state or narrow state types.
+![Initial state constrained demo](/assets/initial-state-constrained.gif)
+
+#### 2. `actions`
+When creating store actions you will be provided with correct types for current `state`, `setState` method and `stores` object. 
+![Action types provided demo](/assets/action-types-provided.gif)
+
+#### 3. Mapped actions
+After describing your store with `createStoreContext` you will be possible to resolve store using `React.useContext` hook. Resulting store will be an intersection of `state`and mapped actions.
+You can set additional action arguments and return any value. Mapped action will infer all of that and provide it to you.
+![Action types provided demo](/assets/mapped-action-types.gif)
+
 ## Docs
 [📖 Read full api reference and docs by clicking here 📖](https://minajevs.github.io/react-concise-state/)
 
 ---
 
-### TODO:
-* Documentation sections about what benefits does TypeScript gives
+MIT License
+Copyright (C) Dmitrijs Minajevs [dmitrijs.minajevs@outlook.com](mailto:dmitrijs.minajevs@outlook.com).
