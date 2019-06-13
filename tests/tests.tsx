@@ -16,18 +16,10 @@ describe('Test function types', () => {
         expect(result.length).toBe(2)
     })
 
-    it('can create empty actions', () => {
-        createStoreContext('empty state', {
-
-        })
-
-        createStoreContext('empty state', undefined)
-    })
-
     it('can create action with no arguments', () => {
-        const [context, provider] = createStoreContext({ foo: '123' }, {
+        const [context, provider] = createStoreContext({ foo: '123' }, () => ({
             action: () => { }
-        })
+        }))
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -44,9 +36,9 @@ describe('Test function types', () => {
     })
 
     it('can create action with no return value', () => {
-        const [context, Provider] = createStoreContext('empty state', {
+        const [context, Provider] = createStoreContext('empty state', () => ({
             action: () => { }
-        })
+        }))
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -63,9 +55,9 @@ describe('Test function types', () => {
     })
 
     it('setState inside action throws an error if no provider is initialized', () => {
-        const [context, Provider] = createStoreContext({ foo: 'string' }, {
-            action: ({ setState }) => { setState({ foo: 'new' }) }
-        })
+        const [context, Provider] = createStoreContext({ foo: 'string' }, ({ setState }) => ({
+            action: () => { setState({ foo: 'new' }) }
+        }))
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -81,13 +73,13 @@ describe('Test function types', () => {
     })
 
     it('can create action with context reference', () => {
-        const [context, Provider] = createStoreContext('empty state', {
-            action: (reference) => {
+        const [context, Provider] = createStoreContext('empty state', (reference) => ({
+            action: () => {
                 expect(reference).toHaveProperty('setState')
                 expect(reference).toHaveProperty('state')
                 verify()
             }
-        })
+        }))
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -104,16 +96,16 @@ describe('Test function types', () => {
     })
 
     it('can deconstruct reference in action creator', () => {
-        const [context, Provider] = createStoreContext({ foo: '1234' }, {
-            action1: ({ setState }) => {
+        const [context, Provider] = createStoreContext({ foo: '1234' }, ({ setState, state }) => ({
+            action1: () => {
                 expect(setState).toBeInstanceOf(Function)
                 verify()
             },
-            action2: ({ state }) => {
+            action2: () => {
                 expect(state).toBeInstanceOf(Object)
                 verify()
             },
-        })
+        }))
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -127,18 +119,18 @@ describe('Test function types', () => {
     })
 
     it('can provide arguments to action', () => {
-        const [context, Provider] = createStoreContext({ foo: '' }, {
-            action1: (_, numberArg: number) => {
+        const [context, Provider] = createStoreContext({ foo: '' }, () => ({
+            action1: (numberArg: number) => {
                 expect(typeof numberArg).toBe('number')
                 verify()
             },
-            action2: (_, stringArg: string, numberArg: number, booleanArg: boolean) => {
+            action2: (stringArg: string, numberArg: number, booleanArg: boolean) => {
                 expect(typeof stringArg).toBe('string')
                 expect(typeof numberArg).toBe('number')
                 expect(typeof booleanArg).toBe('boolean')
                 verify()
             },
-        })
+        }))
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -152,14 +144,14 @@ describe('Test function types', () => {
     })
 
     it('can return value from action', () => {
-        const [context, Provider] = createStoreContext({ foo: '' }, {
+        const [context, Provider] = createStoreContext({ foo: '' }, () => ({
             actionNumber: () => {
                 return 123
             },
             actionString: () => {
                 return '123'
             }
-        })
+        }))
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -192,14 +184,14 @@ describe('Logic', () => {
     })
 
     it('can provide arguments to action', () => {
-        const [context, Provider] = createStoreContext({ foo: '' }, {
-            action: (_, stringArg: string, numberArg: number, booleanArg: boolean) => {
+        const [context, Provider] = createStoreContext({ foo: '' }, () => ({
+            action: (stringArg: string, numberArg: number, booleanArg: boolean) => {
                 expect(stringArg).toBe('123')
                 expect(numberArg).toBe(456)
                 expect(booleanArg).toBe(true)
                 verify()
             },
-        })
+        }))
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -212,14 +204,14 @@ describe('Logic', () => {
     })
 
     it('can modify state from action', () => {
-        const [context, Provider] = createStoreContext({ foo: 'before' }, {
-            action: ({ setState }) => setState(prev => {
+        const [context, Provider] = createStoreContext({ foo: 'before' }, ({ setState }) => ({
+            action: () => setState(prev => {
                 if (prev.foo === 'before')
                     return { foo: 'after' }
 
                 return prev
             }),
-        })
+        }))
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -236,19 +228,18 @@ describe('Logic', () => {
         expect(verify.mock.calls[1][0]).toBe('after')
     })
 
-
     it('can call other context from action', () => {
-        const [context1, Provider1] = createStoreContext({ state1: 'before' }, {
-            action1: ({ setState }) => {
+        const [context1, Provider1] = createStoreContext({ state1: 'before' }, () => ({
+            action1: () => {
                 return 'value-from-action1'
             },
-        })
+        }))
 
-        const [context2, Provider2] = createStoreContext({ state2: 'before' }, {
-            action2: ({ stores }) => {
+        const [context2, Provider2] = createStoreContext({ state2: 'before' }, ({ stores }) => ({
+            action2() {
                 return stores.context1.action1()
             },
-        }, { context1 })
+        }), { context1 })
 
         const Consumer: React.FC = props => {
             const store1 = React.useContext(context1)
@@ -269,6 +260,33 @@ describe('Logic', () => {
                 <Consumer />
             </Provider2>
         </Provider1>)
+        expect(verify.mock.calls.length).toBe(1)
+    })
+
+    it('can call self actions from action', () => {
+        const [context, Provider] = createStoreContext({ state1: 'before' }, () => ({
+            action1() {
+                return 'value-from-action1'
+            },
+            action2() {
+                return this.action1()
+            }
+        }))
+
+        const Consumer: React.FC = props => {
+            const store = React.useContext(context)
+
+            const result = store.action2()
+            expect(result).toBe('value-from-action1')
+
+            verify()
+
+            return <div />
+        }
+
+        mount(<Provider>
+            <Consumer />
+        </Provider>)
         expect(verify.mock.calls.length).toBe(1)
     })
 })

@@ -13,14 +13,14 @@ import createStoreContext from "react-concise-state";
 // 1️⃣ create a store context providing initial state and an actions
 const [context, Provider] = createStoreContext({
     counter: 0
-}, {
+}, ({ state, setState }) => ({
     // 👇 actions modify state using provided `setState`
-    incrementBy: ({ state, setState }, increment: number) => {
+    incrementBy: (increment: number) => {
       const newValue = state.counter + increment
       setState({ counter: newValue })
     },
-    reset: ({ setState }) => setState({ counter: 0 })
-})
+    reset: () => setState({ counter: 0 })
+}))
 
 // 2️⃣ wrap component in created provider
 const App = props => {
@@ -153,6 +153,8 @@ Usually having plain state does not make any sense. There should be some way to 
 * May or may not have a payload
 * May or may not return a value
 * May be async
+* May call own store actions
+* May be chained, injected, cached, curried etc.
 * May call other stores
 * May be written in functional & immutable approach or in imperative approach
 
@@ -161,17 +163,17 @@ To create store action in `react-concise-state` provide a second argument to `cr
 Basic examples:
 ```tsx
 // Imperative
-const actions = {
-    someAction: ({state, setState}, payload) => {
+const actions = ({state, setState}) => ({
+    someAction: ( payload) => {
         const newState = ... // do something
         setState(newState)
     }
-}
+})
 
 // Functional
-const actions = {
-    someAction: ({setState}, payload) => setState(prev => { ..prev, /* do something */})
-}
+const actions = ({setState}) => ({
+    someAction: (payload) => setState(prev => { ..prev, /* do something */})
+})
 
 // Create store
 createStoreContext(state, actions)
@@ -189,19 +191,19 @@ store.someAction('this is a payload string')
 Payload for actions is optional. There could be any amount of payload arguments. 
 
 ```tsx
-const [context, Provider] = createStoreContext({counter: 0}, {
+const [context, Provider] = createStoreContext({counter: 0}, ({state, setState}) => ({
     // No payload
-    increment: ({state, setState}) = setState({counter: ++state.counter}),
+    increment: () => setState({counter: ++state.counter}),
     // If you are using functional style you can also get current state inside `setState` using callback function
-    decrement: ({setState}) => setState(state => ({counter: --state.counter})),
+    decrement: () => setState(state => ({counter: --state.counter})),
 
     // With payload
-    setValue: ({setState}, value) => setState({counter: value}),
-    setValueIfMoreThan: ({state, setState}, value, limit) => {
+    setValue: (value) => setState({counter: value}),
+    setValueIfMoreThan: (value, limit) => {
         if(state.counter > limit)
             setState({counter: value})
     }
-})
+}))
 
 ...
 
@@ -224,18 +226,18 @@ store.setValueIfMoreThan(9, 1)
 You can get return value from actions. It also enabled awaiting async actions.
 
 ```tsx
-const [context, Provider] = createStoreContext({todos: []}, {
+const [context, Provider] = createStoreContext({todos: []}, ({setState}) => ({
     // Returning a value
-    addTodo: ({setState}, todo) => {
+    addTodo: (todo) => {
         const result = Api.addTodo(todo)
         return result
     },
     // Getting todos asynchronously
-    getTodos: async ({setState}) => {
+    getTodos: async () => {
         const todos = await Api.getTodos()
         setState({todos})
     }
-})
+}))
 
 ...
 
@@ -247,6 +249,30 @@ const result = store.addTodo('buy milk')
 await store.getTodos()
 ```
 
+You can call actions from other actions.
+
+```tsx
+const [context, Provider] = createStoreContext({todos: []}, ({setState}) => ({
+    addTodo(todo) {
+        const result = Api.addTodo(todo)
+        this.getTodos()
+    },
+    getTodos: async () => {
+        const todos = await Api.getTodos()
+        setState({todos})
+    }
+}))
+
+...
+
+// Usage
+const store = React.useContext(context)
+
+const result = store.addTodo('buy milk')
+
+// await store.getTodos() - don't need to call it. `.addTodo` will call it
+```
+
 </p></details>
 
 #### Calling other stores
@@ -256,18 +282,18 @@ You can call actions in other stores by providing dependency contexts as a 3rd p
 
 Example:
 ```tsx
-const [todoContext, Provider] = createStoreContext({todos: []}, {
-    addTodo: ({state, setState}, todo) => {
+const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) => ({
+    addTodo: (todo) => {
         setState({todos: [...state.todos, todo]})
     },
-})
-const [mainContext, Provider] = createStoreContext({message: ''}, {
-    someAction: ({setState, stores}, name) => {
+}))
+const [mainContext, Provider] = createStoreContext({message: ''}, ({setState, stores}) => ({
+    someAction: (name) => {
         const { todos } = stores.todoContext // stores.todoContext is a "todo store" ({todos: [], addTodo: (todo) => void})
         const newMessage = `Hello, ${name}, you have ${todos.length} todos!`
         setState({message: newMessage})
     },
-}, {todoContext})
+}), {todoContext})
 ...
 // Usage
 const todoStore = React.useContext(todoContext)

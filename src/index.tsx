@@ -31,7 +31,7 @@ type DropFirst<T extends any[]> =
 */
 
 /**
- * Special context reference object which will be provided to the action as the first argument
+ * Special context reference object which will be provided to the actions
  */
 type ContextReference<TState, TContexts extends Contexts> = {
     state: TState
@@ -40,24 +40,29 @@ type ContextReference<TState, TContexts extends Contexts> = {
 }
 
 /**
- * Action creator which will resolve correct [[ContextReference]] type and map argument types correctly
+ * Action creator which resolves correct argument types
  */
-type Action<TState, TContexts extends Contexts, TArgs extends never[]= never[], TReturn = any> =
-    (contextReference: ContextReference<TState, TContexts>, ...args: TArgs) => TReturn
+type Action<TArgs extends never[] = never[], TReturn = any> =
+    (...args: TArgs) => TReturn
 
 /**
- * Dictionary of action creators [[Action]] in the form { key: actionCreator }
+ * Resolves correct contextReference will all the types correctly mapped
+ * [[ContextReference]] is passed to a dictionary of action creators [[Action]] in the form (contextReference) => ({ key: actionCreator })
  * 
  * Every entry will be mapped to a store action [[MappedActions]]
  */
-type Actions<TState, TContexts extends Contexts> = { [key: string]: Action<TState, TContexts> }
+type Actions<TState, TContexts extends Contexts> = (contextReference: ContextReference<TState, TContexts>) => { [key: string]: Action }
 
 /**
  * Dictionary of store actions in the form { key: action }
  */
-type MappedActions<TState, TContexts extends Contexts, TActions extends Actions<TState, TContexts>> = {
-    [P in keyof TActions]: (...args: DropFirst<Params<TActions[P]>>) => RetType<TActions[P]>
-}
+type MappedActions<
+    TState,
+    TContexts extends Contexts,
+    TActions extends Actions<TState, TContexts>
+    > = {
+        [P in keyof RetType<TActions>]: (...args: Params<RetType<TActions>[P]>) => RetType<RetType<TActions>[P]>
+    }
 
 /**
  * Store as an intersection of TState and [[MappedActions]] 
@@ -101,19 +106,21 @@ type InferStores<TContexts extends Contexts> = {
  * Creates react context with state store. Store consists of state properties and actions which modify it.
  * @param initialState initial state
  * 
- * @param actions a dictionary (key-value object) of action creators for a given store. Actions might have arguments, can modify state and return values.
- * Action creator as a first argument receives special [[ContextReference]] object, which has:
+ * @param actions is a function which creates dictionary (key-value object) of action creators for a given store. Actions might have arguments, can modify state and return values.
+ * Actions creator provide special [[ContextReference]] object for all action-creators, which has:
  * * `setState` method to modify state
  * * `state` object to access current state of type 
  * * `stores` object to access injected store contexts
  * 
- * Any other argument in action creator will be converted to action parameter, which user must provide when calling action.
+ * Any argument in action creator will be converted to action parameter, which user must provide when calling action.
  * 
  * Example: 
  * * Action creator: 
  * ```typescript
- * actionName: (reference, payload: string) => { 
- *      reference.setState({whatever: payload}) 
+ * (reference) => {
+ *      actionName: (payload: string) => { 
+ *           reference.setState({whatever: payload}) 
+ *      }
  * }
  * ```
  * * Action: 
@@ -125,18 +132,18 @@ type InferStores<TContexts extends Contexts> = {
  * 
  * Example:
  * ```typescript
- * createStoreContext({foo: '123'}, {
- *  action: (reference) => {
+ * createStoreContext({foo: '123'}, (reference) => ({
+ *  action: () => {
  *      reference.stores.bar.someBarAction()
  *      return reference.stores.bar.someBarProperty
  *  }
- * }, {
+ * }), {
  *  bar: barContext
  * })
  * ```
  * 
  * @typeparam TState any JS object representing application or application part state 
- * @typeparam TActions a dictionary (key-value object) of action creators
+ * @typeparam TActions creator function of a dictionary (key-value object) of action creators
  * @typeparam TContexts a dictionary (key-value object) of injected store contexts
  * 
  * @returns [context, Provider] tuple, where context is [[React.Context]] and should be consumed to access store, 
@@ -192,12 +199,13 @@ function mapActionsToDispatch<TState, TContexts extends Contexts, TActions exten
     contextReference: ContextReference<TState, TContexts>,
     actions?: TActions,
 ): MappedActions<TState, TContexts, TActions> {
-    if (actions === undefined) return {} as MappedActions<TState, TContexts, TActions>
-    return Object.keys(actions).reduce(
+    if (actions === undefined || typeof actions !== 'function') return {} as MappedActions<TState, TContexts, TActions>
+    const initActions = actions(contextReference)
+    return Object.keys(initActions).reduce(
         (obj, key) => {
             return {
                 ...obj,
-                [key]: (...args: never[]) => actions[key](contextReference, ...args)
+                [key]: (...args: never[]) => initActions[key](...args)
             }
         },
         {} as MappedActions<TState, TContexts, TActions>)
@@ -213,19 +221,19 @@ function mapActionsToDefault<TState,
     initialState: TState,
     actions?: TActions,
 ): MappedActions<TState, TContexts, TActions> {
-    if (actions === undefined) return {} as MappedActions<TState, TContexts, TActions>
-
-    return Object.keys(actions).reduce(
+    if (actions === undefined || typeof actions !== 'function') return {} as MappedActions<TState, TContexts, TActions>
+    const contextReference: ContextReference<TState, TContexts> = {
+        state: initialState,
+        stores: {} as InferStores<TContexts>,
+        // tslint:disable-next-line: max-line-length
+        setState: (value) => { throw new Error(`Can't invoke 'setState' with ${value} because provider does not exist`) }
+    }
+    const initActions = actions(contextReference)
+    return Object.keys(initActions).reduce(
         (obj, key) => {
-            const contextReference: ContextReference<TState, TContexts> = {
-                state: initialState,
-                stores: {} as InferStores<TContexts>,
-                // tslint:disable-next-line: max-line-length
-                setState: (value) => { throw new Error(`[${key}]: Can't invoke 'setState' with ${value} because provider does not exist`) }
-            }
             return {
                 ...obj,
-                [key]: (...args: never[]) => actions[key](contextReference, ...args)
+                [key]: (...args: never[]) => initActions[key](...args)
             }
         },
         {} as MappedActions<TState, TContexts, TActions>)

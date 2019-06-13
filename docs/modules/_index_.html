@@ -102,12 +102,12 @@
 					<div class="tsd-signature tsd-kind-icon">Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L45">index.tsx:45</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L45">index.tsx:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Action creator which will resolve correct <a href="_index_.html#contextreference">ContextReference</a> type and map argument types correctly</p>
+							<p>Action creator which resolves correct argument types</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -115,15 +115,12 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-siganture">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>contextReference<span class="tsd-signature-symbol">: </span><a href="_index_.html#contextreference" class="tsd-signature-type">ContextReference</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">&gt;</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TArgs</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TReturn</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TArgs</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TReturn</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
-											<li>
-												<h5>contextReference: <a href="_index_.html#contextreference" class="tsd-signature-type">ContextReference</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">&gt;</span></h5>
-											</li>
 											<li>
 												<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">TArgs</span></h5>
 											</li>
@@ -138,23 +135,42 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module tsd-has-type-parameter tsd-is-not-exported">
 					<a name="actions" class="tsd-anchor"></a>
 					<h3>Actions</h3>
-					<div class="tsd-signature tsd-kind-icon">Actions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<div class="tsd-signature tsd-kind-icon">Actions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L53">index.tsx:53</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L54">index.tsx:54</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Dictionary of action creators <a href="_index_.html#action">Action</a> in the form { key: actionCreator }</p>
+							<p>Resolves correct contextReference will all the types correctly mapped
+							<a href="_index_.html#contextreference">ContextReference</a> is passed to a dictionary of action creators <a href="_index_.html#action">Action</a> in the form (contextReference) =&gt; ({ key: actionCreator })</p>
 						</div>
 						<p>Every entry will be mapped to a store action <a href="_index_.html#mappedactions">MappedActions</a></p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
-							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="_index_.html#action" class="tsd-signature-type">Action</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">&gt;</span></h5>
+							<li class="tsd-parameter-siganture">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>contextReference<span class="tsd-signature-symbol">: </span><a href="_index_.html#contextreference" class="tsd-signature-type">ContextReference</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>contextReference: <a href="_index_.html#contextreference" class="tsd-signature-type">ContextReference</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">&gt;</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+										<ul class="tsd-parameters">
+											<li class="tsd-parameter-index-signature">
+												<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="_index_.html#action" class="tsd-signature-type">Action</a></h5>
+											</li>
+										</ul>
+									</li>
+								</ul>
 							</li>
 						</ul>
 					</div>
@@ -165,7 +181,7 @@
 					<div class="tsd-signature tsd-kind-icon">Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Context</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L73">index.tsx:73</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L78">index.tsx:78</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -181,12 +197,12 @@
 					<div class="tsd-signature tsd-kind-icon">Context<wbr>Reference<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L36">index.tsx:36</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L36">index.tsx:36</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Special context reference object which will be provided to the action as the first argument</p>
+							<p>Special context reference object which will be provided to the actions</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -210,7 +226,7 @@
 					<div class="tsd-signature tsd-kind-icon">Contexts<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L78">index.tsx:78</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L83">index.tsx:83</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -233,7 +249,7 @@
 					<div class="tsd-signature tsd-kind-icon">Drop<wbr>First<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DropFirst&lt;T&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L26">index.tsx:26</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L26">index.tsx:26</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -253,7 +269,7 @@
 					<div class="tsd-signature tsd-kind-icon">Infer<wbr>Store<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">InferStore&lt;TContext&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L85">index.tsx:85</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L90">index.tsx:90</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -273,7 +289,7 @@
 					<div class="tsd-signature tsd-kind-icon">Infer<wbr>Stores<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L93">index.tsx:93</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L98">index.tsx:98</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -298,7 +314,7 @@
 					<div class="tsd-signature tsd-kind-icon">Mapped<wbr>Actions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L58">index.tsx:58</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L59">index.tsx:59</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -318,7 +334,7 @@
 					<div class="tsd-signature tsd-kind-icon">Params<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Params&lt;T&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L12">index.tsx:12</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L12">index.tsx:12</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -338,7 +354,7 @@
 					<div class="tsd-signature tsd-kind-icon">Ret<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RetType&lt;T&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L19">index.tsx:19</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L19">index.tsx:19</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -358,7 +374,7 @@
 					<div class="tsd-signature tsd-kind-icon">Store<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Store&lt;TState, TContexts, TActions&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L65">index.tsx:65</a></li>
+							<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L70">index.tsx:70</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -380,7 +396,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/790d7f6/src/index.tsx#L145">index.tsx:145</a></li>
+									<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/7386526/src/index.tsx#L152">index.tsx:152</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -405,7 +421,7 @@
 								<li>
 									<h4>TActions<span class="tsd-signature-symbol">: </span><a href="_index_.html#actions" class="tsd-signature-type">Actions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">&gt;</span></h4>
 									<div class="tsd-comment tsd-typography">
-										<p>a dictionary (key-value object) of action creators</p>
+										<p>creator function of a dictionary (key-value object) of action creators</p>
 									</div>
 								</li>
 							</ul>
@@ -420,18 +436,20 @@
 								<li>
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> actions: <span class="tsd-signature-type">TActions</span><span class="tsd-signature-symbol"> =&nbsp;{} as TActions</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>a dictionary (key-value object) of action creators for a given store. Actions might have arguments, can modify state and return values.
-										Action creator as a first argument receives special <a href="_index_.html#contextreference">ContextReference</a> object, which has:</p>
+										<p>is a function which creates dictionary (key-value object) of action creators for a given store. Actions might have arguments, can modify state and return values.
+										Actions creator provide special <a href="_index_.html#contextreference">ContextReference</a> object for all action-creators, which has:</p>
 										<ul>
 											<li><code>setState</code> method to modify state</li>
 											<li><code>state</code> object to access current state of type</li>
 											<li><code>stores</code> object to access injected store contexts</li>
 										</ul>
-										<p>Any other argument in action creator will be converted to action parameter, which user must provide when calling action.</p>
+										<p>Any argument in action creator will be converted to action parameter, which user must provide when calling action.</p>
 										<p>Example:</p>
 										<ul>
-											<li>Action creator:<pre><code class="language-typescript">actionName: <span class="hljs-function">(<span class="hljs-params">reference, payload: <span class="hljs-built_in">string</span></span>) =&gt;</span> {
-   reference.setState({whatever: payload})
+											<li>Action creator:<pre><code class="language-typescript">(reference) =&gt; {
+   actionName: <span class="hljs-function">(<span class="hljs-params">payload: <span class="hljs-built_in">string</span></span>) =&gt;</span> {
+        reference.setState({whatever: payload})
+   }
 }</code></pre>
 											</li>
 											<li>Action:<pre><code class="language-typescript">store.actionName(<span class="hljs-string">"Hello world"</span>)</code></pre>
@@ -444,12 +462,12 @@
 									<div class="tsd-comment tsd-typography">
 										<p>a dictionary (key-value object) of injected store contexts. Those stores will be resolved and passed to actions in <code>stores</code> property of <a href="_index_.html#contextreference">ContextReference</a></p>
 										<p>Example:</p>
-										<pre><code class="language-typescript">createStoreContext({foo: <span class="hljs-string">'123'</span>}, {
- action: <span class="hljs-function">(<span class="hljs-params">reference</span>) =&gt;</span> {
+										<pre><code class="language-typescript">createStoreContext({foo: <span class="hljs-string">'123'</span>}, <span class="hljs-function">(<span class="hljs-params">reference</span>) =&gt;</span> ({
+ action: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
      reference.stores.bar.someBarAction()
      <span class="hljs-keyword">return</span> reference.stores.bar.someBarProperty
  }
-}, {
+}), {
  bar: barContext
 })</code></pre>
 									</div>
