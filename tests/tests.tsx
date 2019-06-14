@@ -1,7 +1,8 @@
 import * as React from 'react'
 
 import createStoreContext from '../src/index'
-import { mount } from 'enzyme';
+import { mount } from 'enzyme'
+import { Middleware } from '../src/types';
 
 describe('Test function types', () => {
     const verify = jest.fn()
@@ -239,7 +240,7 @@ describe('Logic', () => {
             action2() {
                 return stores.context1.action1()
             },
-        }), { context1 })
+        }), { contexts: { context1 } })
 
         const Consumer: React.FC = props => {
             const store1 = React.useContext(context1)
@@ -288,5 +289,45 @@ describe('Logic', () => {
             <Consumer />
         </Provider>)
         expect(verify.mock.calls.length).toBe(1)
+    })
+})
+
+describe('Middleware', () => {
+    const verify = jest.fn()
+
+    const testMiddleware: Middleware = async (action, actionKey, ...args) => {
+        verify(actionKey, ...args)
+        action(...args)
+    }
+
+    beforeEach(() => {
+        verify.mockClear()
+    })
+
+    it('can provide middleware to creator', () => {
+        const [context, Provider] = createStoreContext({ foo: '' }, () => ({
+            actionName: (number: number, boolean: boolean) => {
+                verify('fun called', number, boolean)
+            },
+        }), {
+                middleware: [testMiddleware]
+            })
+
+        const Consumer: React.FC = props => {
+            const store = React.useContext(context)
+            store.actionName(42, true)
+            return <div />
+        }
+
+        mount(<Provider><Consumer /></Provider>)
+        expect(verify.mock.calls.length).toBe(2)
+        // middleware
+        expect(verify.mock.calls[0][0]).toBe('actionName')
+        expect(verify.mock.calls[0][1]).toBe(42)
+        expect(verify.mock.calls[0][2]).toBe(true)
+        // action
+        expect(verify.mock.calls[1][0]).toBe('fun called')
+        expect(verify.mock.calls[1][1]).toBe(42)
+        expect(verify.mock.calls[1][2]).toBe(true)
     })
 })

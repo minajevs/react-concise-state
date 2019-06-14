@@ -8,7 +8,7 @@
 Simple, low-impact state manager for smaller React applications. 
 
 ```tsx
-import createStoreContext from "react-concise-state";
+import createStoreContext from "react-concise-state"
 
 // 1️⃣ create a store context providing initial state and an actions
 const [context, Provider] = createStoreContext({
