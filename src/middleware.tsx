@@ -16,7 +16,7 @@ export function createMiddleware<TContexts extends Contexts>(
 /**
  * @hidden Internal method which runs an action with all the provided middleware
  */
-export async function runWithMiddleware<
+export function runWithMiddleware<
     TState,
     TContexts extends Contexts,
     TArgs extends [],
