@@ -47,6 +47,9 @@ const CounterComponent: React.FC = props => {
 ```
 
 ## Features
+* Store cross-calls
+* Middleware
+* Multi-paradigm
 * Quick and extremely easy to use 
 * Integrates into general React workflow. Uses contexts, state and hooks 
 * Low impact. [<1kB gziped](https://bundlephobia.com/result?p=react-concise-state@0.3.0)
@@ -275,10 +278,10 @@ const result = store.addTodo('buy milk')
 
 </p></details>
 
-#### Calling other stores
+#### `contexts` - calling other stores
 Sometimes you would like to call other store action from an action. You can't use `React.useContext` because of specific hook rules in React. Hook amount should never change during runtime and only way to supply that is to initialize all dependency contexts before bootstraping actions.
 
-You can call actions in other stores by providing dependency contexts as a 3rd parameter to `createStoreContext`. Those contexts will be mapped to corresponding stores internally and will be available in `stores` object in `{setState, action, stores}`  argument of action creator.
+You can call actions in other stores by providing dependency contexts in a 3rd parameter to `createStoreContext`. Those contexts will be mapped to corresponding stores internally and will be available in `stores` object in `{setState, action, stores}`  argument of action creator.
 
 Example:
 ```tsx
@@ -293,7 +296,7 @@ const [mainContext, Provider] = createStoreContext({message: ''}, ({setState, st
         const newMessage = `Hello, ${name}, you have ${todos.length} todos!`
         setState({message: newMessage})
     },
-}), {todoContext})
+}), { contexts: { todoContext })
 ...
 // Usage
 const todoStore = React.useContext(todoContext)
@@ -302,6 +305,55 @@ todoStore.addTodo('buy milk')
 todoStore.addTodo('learn typescript')
 mainStore.someAction('Dmitrijs')
 // mainStore.message is "Hello, Dmitrijs, you have 2 todos!" 
+```
+
+#### `middleware` - wrapping store actions in a middleware
+Actions are just a functions which modify state and/or return some values. Actions may be just plain state reducers, or they can contain some complex logic with API calls 
+and data manipulation. In any case you will usually run into such situation, that all actions of the store need to do something the same way. E.g. log input values, handle errors the same way, etc... Middleware is there for that exact reason. 
+
+You can provide any middleware to store creation in a 3rd parameter to `createStoreContext`. That middleware will be executed every time you call any store action, just after you call it and just before it actually executes. 
+
+Example: 
+```tsx
+// Without middleware
+const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) => ({
+    addTodo: (todo) => {
+        console.log('Calling addTodo with argument ' + todo)
+        try {  
+            Api.addTodo(todo)
+        } catch (ex) {
+            console.log(ex)
+        }
+    },
+    getAll: () => {
+        console.log('Calling getAll')
+        try {  
+            const todos = Api.getAll()
+            setState({todos})
+        } catch (ex) {
+            console.log(ex)
+        }
+    }
+}))
+
+// With middleware
+const errorHandling: Middleware = (next, actionKey, args) => {
+    try {
+        next(args)
+    } catch (ex) {
+        console.log(ex)
+    }      
+}
+
+const logging: Middleware = (next, actionKey, args) => console.log(`Calling ${actionKey} with arguments ${args}`)
+
+const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) => ({
+    addTodo: (todo) => Api.addTodo(todo),
+    getAll: () => {  
+        const todos = Api.getAll()
+        setState({todos})
+    }
+}), { middleware: [errorHandling, logging]})
 ```
 
 ## TypeScript

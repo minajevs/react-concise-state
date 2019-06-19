@@ -1,7 +1,8 @@
 import * as React from 'react'
 
-import { Contexts, Actions, Store, InferStores, Middleware } from './types'
+import { Contexts, Store, Middleware, InitActions, MiddlewareCreator } from './types'
 import { mapActionsToDefault, mapActionsToDispatch } from './mapActions'
+import { resolveStores, resolveMiddleware } from './resolvers'
 
 /**
  * Creates react context with state store. Store consists of state properties and actions which modify it.
@@ -29,8 +30,11 @@ import { mapActionsToDefault, mapActionsToDispatch } from './mapActions'
  * store.actionName("Hello world")
  * ```
  *
- * @param contexts a dictionary (key-value object) of injected store contexts. Those stores will be resolved and passed to actions in `stores` property of [[ContextReference]]
- *
+ * @param options is special configuration object with 2 candidate properties: `contexts` and `middleware`
+ * * `contexts` is a dictionary (key-value object) of injected store contexts. Those stores will be resolved and passed to actions in `stores` property of [[ContextReference]]
+ * * `middleware` is an array of used middleware. Middleware is special function which is executed after store action is called and before it is actually exectude. 
+ *      Examples of middleware could be LogginMiddleware, which logs every action request to console, or ErrorHandlerMiddleware, which wraps every request in `try...catch` block   
+ * 
  * Example:
  * ```typescript
  * createStoreContext({foo: '123'}, (reference) => ({
@@ -38,8 +42,9 @@ import { mapActionsToDefault, mapActionsToDispatch } from './mapActions'
  *      reference.stores.bar.someBarAction()
  *      return reference.stores.bar.someBarProperty
  *  }
- * }), {
- *  bar: barContext
+ * }), { 
+ *      contexts: {  bar: barContext },
+ *      middleware: [ loggingMiddleware, errorHandlerMiddleware ]
  * })
  * ```
  *
@@ -52,17 +57,18 @@ import { mapActionsToDefault, mapActionsToDispatch } from './mapActions'
  */
 export default function createStoreContext<
     TState,
+    TMiddlewareContexts extends Contexts = Contexts,
     TContexts extends Contexts = Contexts,
-    TActions extends Actions<TState, TContexts> = Actions<TState, TContexts>,
+    TInitActions extends InitActions<TState, TContexts> = InitActions<TState, TContexts>,
     >(
         initialState: TState,
-        actions: TActions = {} as TActions,
+        actions: TInitActions = {} as TInitActions,
         options: {
             contexts?: TContexts,
-            middleware?: Middleware[]
+            middleware?: (Middleware | MiddlewareCreator<TMiddlewareContexts>)[]
         } = {}
-    ): [React.Context<Store<TState, TContexts, TActions>>, React.FC] {
-    const store = { ...initialState, ...mapActionsToDefault(initialState, actions) } as Store<TState, TContexts, TActions>
+    ): [React.Context<Store<TState, TContexts, TInitActions>>, React.FC] {
+    const store = { ...initialState, ...mapActionsToDefault(initialState, actions) } as Store<TState, TContexts, TInitActions>
     const context = React.createContext(store)
 
     const provider: React.FC = props => {
@@ -71,14 +77,15 @@ export default function createStoreContext<
         const { contexts, middleware } = options
 
         const _stores = resolveStores(contexts)
+        const _middleware = resolveMiddleware(middleware)
 
         const _actions = mapActionsToDispatch({
             state: _state,
             setState,
             stores: _stores
-        }, actions, middleware)
+        }, actions, _middleware)
 
-        const _store = { ..._state, ..._actions } as Store<TState, TContexts, TActions>
+        const _store = { ..._state, ..._actions } as Store<TState, TContexts, TInitActions>
         return (<context.Provider value={_store}>
             {props.children}
         </context.Provider>)
@@ -86,13 +93,3 @@ export default function createStoreContext<
 
     return [context, provider]
 }
-
-const resolveStores = <TContexts extends Contexts>(contexts: TContexts = {} as TContexts) =>
-    Object.keys(contexts).reduce((obj, key) => {
-        return {
-            ...obj,
-            [key]: React.useContext(contexts[key])
-        }
-    }, {} as InferStores<TContexts>)
-
-const resolveMiddleware = (middleware: Middleware[] = []) => middleware

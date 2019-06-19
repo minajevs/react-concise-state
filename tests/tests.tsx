@@ -3,6 +3,7 @@ import * as React from 'react'
 import createStoreContext from '../src/index'
 import { mount } from 'enzyme'
 import { Middleware } from '../src/types';
+import { createMiddleware } from '../src/middleware';
 
 describe('Test function types', () => {
     const verify = jest.fn()
@@ -290,15 +291,68 @@ describe('Logic', () => {
         </Provider>)
         expect(verify.mock.calls.length).toBe(1)
     })
+
+    it('self actions called from aother actions can modify state', () => {
+        const [context, Provider] = createStoreContext({ state1: 'before' }, ({ setState }) => ({
+            action1() {
+                setState(prev => {
+                    if (prev.state1 === 'before')
+                        return { state1: 'after' }
+
+                    return prev
+                })
+            },
+            action2() {
+                return this.action1()
+            }
+        }))
+
+        const Consumer: React.FC = props => {
+            const store = React.useContext(context)
+
+            store.action2()
+
+            verify(store.state1)
+
+            return <div />
+        }
+
+        mount(<Provider>
+            <Consumer />
+        </Provider>)
+        expect(verify.mock.calls.length).toBe(2)
+        expect(verify.mock.calls[0][0]).toBe('before')
+        expect(verify.mock.calls[1][0]).toBe('after')
+    })
 })
 
 describe('Middleware', () => {
     const verify = jest.fn()
 
-    const testMiddleware: Middleware = async (action, actionKey, ...args) => {
-        verify(actionKey, ...args)
-        action(...args)
+    const testMiddleware1: Middleware = (next, actionKey, args) => {
+        verify(actionKey, args)
+        next(args)
     }
+
+    const testMiddleware2: Middleware = (next, actionKey, args) => {
+        verify('middleware2')
+        next(args)
+    }
+
+    const [middlewareContext, MiddlewareContextProvider] = createStoreContext({ lastCalledAction: '' }, ({ setState }) => ({
+        setCalled: (action: string) => setState(prev => {
+            if (prev.lastCalledAction !== action)
+                return { lastCalledAction: action }
+
+            return prev
+        })
+    }))
+
+    const middlewareCreator = createMiddleware(({ stores }, next, actionKey, args) => {
+        stores.middlewareStore.setCalled(actionKey)
+        console.log('creat')
+        next(args)
+    }, { middlewareStore: middlewareContext })
 
     beforeEach(() => {
         verify.mockClear()
@@ -307,10 +361,11 @@ describe('Middleware', () => {
     it('can provide middleware to creator', () => {
         const [context, Provider] = createStoreContext({ foo: '' }, () => ({
             actionName: (number: number, boolean: boolean) => {
+                console.log('fun')
                 verify('fun called', number, boolean)
             },
         }), {
-                middleware: [testMiddleware]
+                middleware: [testMiddleware1]
             })
 
         const Consumer: React.FC = props => {
@@ -323,11 +378,67 @@ describe('Middleware', () => {
         expect(verify.mock.calls.length).toBe(2)
         // middleware
         expect(verify.mock.calls[0][0]).toBe('actionName')
-        expect(verify.mock.calls[0][1]).toBe(42)
-        expect(verify.mock.calls[0][2]).toBe(true)
+        expect(verify.mock.calls[0][1]).toEqual([42, true])
         // action
         expect(verify.mock.calls[1][0]).toBe('fun called')
         expect(verify.mock.calls[1][1]).toBe(42)
         expect(verify.mock.calls[1][2]).toBe(true)
+    })
+
+    it('can provide middleware creator', () => {
+        const [context, Provider] = createStoreContext({ foo: '' }, () => ({
+            actionName: (number: number, boolean: boolean) => {
+                // verify('fun called', number, boolean)
+            },
+        }), {
+                middleware: [middlewareCreator]
+            })
+
+        const Consumer: React.FC = props => {
+            const store = React.useContext(context)
+            store.actionName(42, true)
+            return <div />
+        }
+
+        const MiddlewareStoreVerifyer: React.FC = props => {
+            const store = React.useContext(middlewareContext)
+            verify(store.lastCalledAction)
+            return <div />
+        }
+
+        mount(<MiddlewareContextProvider>
+            <Provider><Consumer /></Provider>
+            <MiddlewareStoreVerifyer />
+        </MiddlewareContextProvider>)
+        expect(verify.mock.calls.length).toBe(2)
+        expect(verify.mock.calls[0][0]).toBe('')
+        expect(verify.mock.calls[1][0]).toBe('actionName')
+    })
+
+    it('can provide multiple middlewares to creator', () => {
+        const [context, Provider] = createStoreContext({ foo: '' }, () => ({
+            actionName: (number: number, boolean: boolean) => {
+                verify('fun called', number, boolean)
+            },
+        }), {
+                middleware: [testMiddleware1, testMiddleware2]
+            })
+
+        const Consumer: React.FC = props => {
+            const store = React.useContext(context)
+            store.actionName(42, true)
+            return <div />
+        }
+
+        mount(<Provider><Consumer /></Provider>)
+        expect(verify.mock.calls.length).toBe(3)
+        // middleware
+        expect(verify.mock.calls[0][0]).toBe('actionName')
+        expect(verify.mock.calls[0][1]).toEqual([42, true])
+        expect(verify.mock.calls[1][0]).toBe('middleware2')
+        // action
+        expect(verify.mock.calls[2][0]).toBe('fun called')
+        expect(verify.mock.calls[2][1]).toBe(42)
+        expect(verify.mock.calls[2][2]).toBe(true)
     })
 })

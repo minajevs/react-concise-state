@@ -1,19 +1,46 @@
-import { Action, Middleware } from './types'
+import { Action, Middleware, Contexts, InitActions, RetType, MiddlewareCreator, InitMiddleware } from './types'
 
-export function runWithMiddleware<
+/**
+ * Helper method to create custom middleware. It makes possible to create middleware using user stores, so that it could call other actions.
+ */
+export function createMiddleware<TContexts extends Contexts>(
+    initMiddleware: InitMiddleware<TContexts>,
+    contexts: TContexts = {} as TContexts
+): MiddlewareCreator<TContexts> {
+    return {
+        initMiddleware,
+        contexts
+    }
+}
+
+/**
+ * @hidden Internal method which runs an action with all the provided middleware
+ */
+export async function runWithMiddleware<
+    TState,
+    TContexts extends Contexts,
     TArgs extends [],
     TReturn,
-    TAction extends Action<TArgs, TReturn>
+    TMiddleware extends Middleware<TArgs, TReturn>
 >(
-    middleware: Middleware[],
-    action: TAction,
+    middleware: TMiddleware[],
+    actions: RetType<InitActions<TState, TContexts>>,
     actionKey: string,
-    ...args: TArgs
+    args: TArgs
 ) {
     const [first, ...rest] = middleware
 
-    if (rest.length > 0)
-        runWithMiddleware(rest, action, actionKey, ...args)
+    const action = actions[actionKey]
 
-    first(action, actionKey, ...args)
+    if (first === undefined)
+        actionCaller(action, actions)(args)
+
+    first((nextArgs) => runWithMiddleware(rest, actions, actionKey, nextArgs), actionKey, args)
 }
+
+const actionCaller = <
+    TState,
+    TContexts extends Contexts,
+    TArgs extends [],
+    TAction extends Action<TArgs> = Action<TArgs>
+>(action: TAction, actions: RetType<InitActions<TState, TContexts>>) => (args: TArgs) => action.call(actions, ...args)
