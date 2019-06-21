@@ -27,15 +27,15 @@ export function runWithMiddleware<
     actions: RetType<InitActions<TState, TContexts>>,
     actionKey: string,
     args: TArgs
-) {
+): TReturn | Promise<TReturn> {
     const [first, ...rest] = middleware
 
     const action = actions[actionKey]
 
     if (first === undefined)
-        actionCaller(action, actions)(args)
+        return actionCaller(action, actions)(args)
 
-    first((nextArgs) => runWithMiddleware(rest, actions, actionKey, nextArgs), actionKey, args)
+    return first((nextArgs) => runWithMiddleware(rest, actions, actionKey, nextArgs), actionKey, args)
 }
 
 const actionCaller = <
