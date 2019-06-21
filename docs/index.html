@@ -70,7 +70,7 @@
 					<p>Yet another React state manager</p>
 				</blockquote>
 				<p>Simple, low-impact state manager for smaller React applications. </p>
-				<pre><code class="language-tsx">import createStoreContext from &quot;react-concise-state&quot;;
+				<pre><code class="language-tsx">import createStoreContext from &quot;react-concise-state&quot;
 
 // 1️⃣ create a store context providing initial state and an actions
 const [context, Provider] = createStoreContext({
@@ -108,6 +108,9 @@ const CounterComponent: React.FC = props =&gt; {
 }</code></pre>
 				<h2 id="features">Features</h2>
 				<ul>
+					<li>Store cross-calls</li>
+					<li>Middleware</li>
+					<li>Multi-paradigm</li>
 					<li>Quick and extremely easy to use </li>
 					<li>Integrates into general React workflow. Uses contexts, state and hooks </li>
 					<li>Low impact. <a href="https://bundlephobia.com/result?p=react-concise-state@0.3.0">&lt;1kB gziped</a></li>
@@ -286,9 +289,9 @@ const result = store.addTodo(&#39;buy milk&#39;)
 
 // await store.getTodos() - don&#39;t need to call it. `.addTodo` will call it</code></pre>
 				</p></details>
-				<h4 id="calling-other-stores">Calling other stores</h4>
+				<h4 id="contexts-calling-other-stores"><code>contexts</code> - calling other stores</h4>
 				<p>Sometimes you would like to call other store action from an action. You can&#39;t use <code>React.useContext</code> because of specific hook rules in React. Hook amount should never change during runtime and only way to supply that is to initialize all dependency contexts before bootstraping actions.</p>
-				<p>You can call actions in other stores by providing dependency contexts as a 3rd parameter to <code>createStoreContext</code>. Those contexts will be mapped to corresponding stores internally and will be available in <code>stores</code> object in <code>{setState, action, stores}</code>  argument of action creator.</p>
+				<p>You can call actions in other stores by providing dependency contexts in a 3rd parameter to <code>createStoreContext</code>. Those contexts will be mapped to corresponding stores internally and will be available in <code>stores</code> object in <code>{setState, action, stores}</code>  argument of action creator.</p>
 				<p>Example:</p>
 				<pre><code class="language-tsx">const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) =&gt; ({
     addTodo: (todo) =&gt; {
@@ -301,7 +304,7 @@ const [mainContext, Provider] = createStoreContext({message: &#39;&#39;}, ({setS
         const newMessage = `Hello, ${name}, you have ${todos.length} todos!`
         setState({message: newMessage})
     },
-}), {todoContext})
+}), { contexts: { todoContext })
 ...
 // Usage
 const todoStore = React.useContext(todoContext)
@@ -310,6 +313,50 @@ todoStore.addTodo(&#39;buy milk&#39;)
 todoStore.addTodo(&#39;learn typescript&#39;)
 mainStore.someAction(&#39;Dmitrijs&#39;)
 // mainStore.message is &quot;Hello, Dmitrijs, you have 2 todos!&quot; </code></pre>
+				<h4 id="middleware-wrapping-store-actions-in-a-middleware"><code>middleware</code> - wrapping store actions in a middleware</h4>
+				<p>Actions are just a functions which modify state and/or return some values. Actions may be just plain state reducers, or they can contain some complex logic with API calls
+				and data manipulation. In any case you will usually run into such situation, that all actions of the store need to do something the same way. E.g. log input values, handle errors the same way, etc... Middleware is there for that exact reason. </p>
+				<p>You can provide any middleware to store creation in a 3rd parameter to <code>createStoreContext</code>. That middleware will be executed every time you call any store action, just after you call it and just before it actually executes. </p>
+				<p>Example: </p>
+				<pre><code class="language-tsx">// Without middleware
+const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) =&gt; ({
+    addTodo: (todo) =&gt; {
+        console.log(&#39;Calling addTodo with argument &#39; + todo)
+        try {  
+            Api.addTodo(todo)
+        } catch (ex) {
+            console.log(ex)
+        }
+    },
+    getAll: () =&gt; {
+        console.log(&#39;Calling getAll&#39;)
+        try {  
+            const todos = Api.getAll()
+            setState({todos})
+        } catch (ex) {
+            console.log(ex)
+        }
+    }
+}))
+
+// With middleware
+const errorHandling: Middleware = (next, actionKey, args) =&gt; {
+    try {
+        next(args)
+    } catch (ex) {
+        console.log(ex)
+    }      
+}
+
+const logging: Middleware = (next, actionKey, args) =&gt; console.log(`Calling ${actionKey} with arguments ${args}`)
+
+const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) =&gt; ({
+    addTodo: (todo) =&gt; Api.addTodo(todo),
+    getAll: () =&gt; {  
+        const todos = Api.getAll()
+        setState({todos})
+    }
+}), { middleware: [errorHandling, logging]})</code></pre>
 				<h2 id="typescript">TypeScript</h2>
 				<p>This library is written in TypeScript and leverages its type system to the fullest. One of the main goals of this library is to provide type-safe state management with minimum (almost zero) boilerplate code.   </p>
 				<details><summary>Why most libraries fail on this</summary><p>
@@ -344,7 +391,22 @@ mainStore.someAction(&#39;Dmitrijs&#39;)
 						<a href="globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="modules/_createstorecontext_.html">"create<wbr>Store<wbr>Context"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="modules/_index_.html">"index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_mapactions_.html">"map<wbr>Actions"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_middleware_.html">"middleware"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_resolvers_.html">"resolvers"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_types_.html">"types"</a>
 					</li>
 				</ul>
 			</nav>
