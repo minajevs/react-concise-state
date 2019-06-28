@@ -8,7 +8,7 @@
 Simple, low-impact state manager for smaller React applications. 
 
 ```tsx
-import createStoreContext from "react-concise-state";
+import createStoreContext from "react-concise-state"
 
 // 1️⃣ create a store context providing initial state and an actions
 const [context, Provider] = createStoreContext({
@@ -47,6 +47,9 @@ const CounterComponent: React.FC = props => {
 ```
 
 ## Features
+* Store cross-calls
+* Middleware
+* Multi-paradigm
 * Quick and extremely easy to use 
 * Integrates into general React workflow. Uses contexts, state and hooks 
 * Low impact. [<1kB gziped](https://bundlephobia.com/result?p=react-concise-state@0.3.0)
@@ -164,7 +167,7 @@ Basic examples:
 ```tsx
 // Imperative
 const actions = ({state, setState}) => ({
-    someAction: ( payload) => {
+    someAction: (payload) => {
         const newState = ... // do something
         setState(newState)
     }
@@ -275,10 +278,10 @@ const result = store.addTodo('buy milk')
 
 </p></details>
 
-#### Calling other stores
+#### `contexts` - calling other stores
 Sometimes you would like to call other store action from an action. You can't use `React.useContext` because of specific hook rules in React. Hook amount should never change during runtime and only way to supply that is to initialize all dependency contexts before bootstraping actions.
 
-You can call actions in other stores by providing dependency contexts as a 3rd parameter to `createStoreContext`. Those contexts will be mapped to corresponding stores internally and will be available in `stores` object in `{setState, action, stores}`  argument of action creator.
+You can call actions in other stores by providing dependency contexts in a 3rd parameter to `createStoreContext`. Those contexts will be mapped to corresponding stores internally and will be available in `stores` object in `{setState, action, stores}`  argument of action creator.
 
 Example:
 ```tsx
@@ -293,7 +296,7 @@ const [mainContext, Provider] = createStoreContext({message: ''}, ({setState, st
         const newMessage = `Hello, ${name}, you have ${todos.length} todos!`
         setState({message: newMessage})
     },
-}), {todoContext})
+}), { contexts: { todoContext })
 ...
 // Usage
 const todoStore = React.useContext(todoContext)
@@ -302,6 +305,104 @@ todoStore.addTodo('buy milk')
 todoStore.addTodo('learn typescript')
 mainStore.someAction('Dmitrijs')
 // mainStore.message is "Hello, Dmitrijs, you have 2 todos!" 
+```
+
+#### `middleware` - wrapping store actions in a middleware
+Actions are just a functions which modify state and/or return some values. Actions may be just plain state reducers, or they can contain some complex logic with API calls 
+and data manipulation. In any case you will usually run into such situation, that all actions of the store need to do something the same way. E.g. log input values, handle errors the same way, etc... Middleware is there for that exact reason. 
+
+You can provide any middleware to store creation in a 3rd parameter to `createStoreContext`. That middleware will be executed every time you call any store action, just after you call it and just before it actually executes. 
+
+Example: 
+```tsx
+// Without middleware
+const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) => ({
+    addTodo: (todo) => {
+        // Logging
+        console.log('Calling addTodo with argument ' + todo)
+        // Error handling
+        try {  
+            Api.addTodo(todo)
+        } catch (ex) {
+            console.log(ex)
+        }
+    },
+    getAll: () => {
+        // Logging
+        console.log('Calling getAll')
+        // Error handling
+        // Notice how at this point we are writing same stuff over and over again
+        try {  
+            const todos = Api.getAll()
+            setState({todos})
+        } catch (ex) {
+            console.log(ex)
+        }
+    }
+}))
+
+// With middleware
+import { Middleware } from 'react-concise-state'
+
+// Error handling middleware
+const errorHandling: Middleware = (next, actionKey, args) => {
+    try {
+        // try calling next executable function in the flow (either next middleware or aciton itself)
+        // Don't forget to pass arguments
+        next(args)
+    } catch (ex) {
+        // If it fails (action or other middleware) log an error
+        console.log(ex)
+    }      
+}
+
+// Logging middleware
+const logging: Middleware = (next, actionKey, args) => {
+    // Log to console action key (name) and it's arguments
+    console.log(`Calling ${actionKey} with arguments ${args}`)
+    // Don't forget to call `next(args)`! 
+    next(args)
+}
+
+const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) => ({
+    addTodo: (todo) => Api.addTodo(todo),
+    getAll: () => {  
+        const todos = Api.getAll()
+        setState({todos})
+    }
+}), { middleware: [errorHandling, logging]}) // Provide middleware to the store
+```
+
+#### `createMiddleware` - creating custom store-bind middleware
+Middleware is a useful pattern, which you can use to streamline store actions, make stores more generic and have almost perfect reusability across contexts.
+Default and the easiest way to create a middleware for your store is to make a new function of type `Middleware`.
+However, what if you want to save every exception into some store and then display those errors in some other components nicely? You may inject stores into middleware by using 
+`createMiddleware` helper. After injecting stores you may access store state and actions inside middleware. Error handling middleware example:
+
+```tsx
+import { createMiddleware, createStoreContext } from 'react-concise-state'
+
+// Creating errors store
+const [context, Provider] = createStateContext({
+    latestError: null as Error | null,
+    errorLog: [] as Error[]
+}, ({setState}) => {
+    // Set latestError and push it to error log
+    handleError: (error: Error) => {
+        setState(prev => ({...prev, latestError: error, errorLog: [...prev.errorLog, error]}))
+    }
+})
+
+// Creating error hadnling middleware with injected errors store
+const errorHandling = createMiddleware(({stores}, next, actionKey, args) => {
+    try {
+        await next(args)
+    } catch (ex) {
+        // Call error store to save error in it
+        stores.errors.handleError(ex)
+    }
+}, { errors: context })
+
 ```
 
 ## TypeScript
