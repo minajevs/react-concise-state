@@ -31,10 +31,11 @@ export type DropFirst<T extends any[]> = ((...args: T) => any) extends (arg: any
 /**
  * Special context reference object which will be provided to the actions
  */
-export type ContextReference<TState, TContexts extends Contexts> = {
+export type ContextReference<TState, TContexts extends Contexts, TMeta extends Meta> = {
     state: TState
     setState: React.Dispatch<React.SetStateAction<TState>>
     stores: InferStores<TContexts>
+    meta: TMeta
 }
 
 /**
@@ -49,22 +50,29 @@ export type Action<TArgs extends any[] = any[], TReturn = any> =
  *
  * Every entry will be mapped to a store action [[MappedActions]]
  */
-export type InitActions<TState, TContexts extends Contexts> = (contextReference: ContextReference<TState, TContexts>) => {
+export type InitActions<TState, TContexts extends Contexts, TMeta extends Meta> = (contextReference: ContextReference<TState, TContexts, TMeta>) => {
     [key: string]: Action
 }
 
 /**
  * Dictionary of store actions in the form { key: action }
  */
-export type MappedActions<TState, TContexts extends Contexts, TInitActions extends InitActions<TState, TContexts>> = {
+export type MappedActions<TState, TContexts extends Contexts, TMeta extends Meta, TInitActions extends InitActions<TState, TContexts, TMeta>> = {
     [P in keyof RetType<TInitActions>]: (...args: Params<RetType<TInitActions>[P]>) => RetType<RetType<TInitActions>[P]>
+}
+
+/**
+ * Object which contains user-defined meta information for the store
+ */
+export type Meta = {
+    readonly [key: string]: any
 }
 
 /**
  * Store as an intersection of TState and [[MappedActions]]
  */
-export type Store<TState, TContexts extends Contexts, TInitActions extends InitActions<TState, TContexts>> =
-    TInitActions extends undefined ? TState : TState & MappedActions<TState, TContexts, TInitActions>
+export type Store<TState, TContexts extends Contexts, TMeta extends Meta, TInitActions extends InitActions<TState, TContexts, TMeta>> =
+    TInitActions extends undefined ? TState : TState & MappedActions<TState, TContexts, TMeta, TInitActions>
 
 /**
  * React.Context wrapper to predefault context type to any.
@@ -111,15 +119,25 @@ export type MiddlewareAction<TArgs extends [] = [], TReturn = any> =
     (args: TArgs) => TReturn | void
 
 /**
+ * Meta information about current store and action which is being executed
+ */
+export type MiddlewareMeta = {
+    /**
+    * Name of the action which is currently being executed
+    */
+    readonly actionName: string
+} & Meta
+
+/**
  * Middleware function, which will be executed after store action is called and before it executes
  * @typeparam TArgs Type of the arguments of the action
  * @typeparam TMiddlewareAction Next action in the chain. Could be either [[Action]] or [[MiddlewareAction]]
  * @param next Callable next action. Middleware must call it with `args` argument to continue the chain of calls. If `next` is not called, store action won't be executed
- * @param actionKey String name of the called action
  * @param args Array of action arguments, which action was originally called with
+ * @param meta [[MiddlewareMeta]] Object which contains useful meta information about current store and action which is being executed
  */
 export type Middleware<TArgs extends [] = [], TReturn extends any = any, TMiddlewareAction extends MiddlewareAction<TArgs> = MiddlewareAction<TArgs>> =
-    (next: TMiddlewareAction, actionKey: string, args: TArgs) => Promise<TReturn> | TReturn
+    (next: TMiddlewareAction, args: TArgs, meta: MiddlewareMeta) => Promise<TReturn> | TReturn
 
 /**
  * Special middleware context reference object which will be provided to the middleware
@@ -130,17 +148,16 @@ export type MiddlewareContextReference<TContexts extends Contexts> = {
 
 /**
  * Resolves correct middlewareContextReference with all the types correctly mapped
- * [[MiddlewareContextReference]] is passed to a middleware function [[Middleware]] in the form (reference) => middleware
+ * [[MiddlewareMeta]] and [[MiddlewareContextReference]] is passed to a middleware function [[Middleware]] in the form (meta && reference) => middleware
  */
 export type InitMiddleware<
     TContexts extends Contexts = Contexts,
     TArgs extends [] = [],
     TMiddlewareAction extends MiddlewareAction<TArgs> = MiddlewareAction<TArgs>
     > = (
-        reference: MiddlewareContextReference<TContexts>,
         next: TMiddlewareAction,
-        actionKey: string,
-        args: TArgs
+        args: TArgs,
+        meta: MiddlewareContextReference<TContexts> & MiddlewareMeta,
     ) => Promise<void> | void
 
 /**

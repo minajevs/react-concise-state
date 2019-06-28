@@ -1,4 +1,4 @@
-import { Contexts, InferStores, ContextReference, MappedActions, Middleware, InitActions } from './types'
+import { Contexts, InferStores, ContextReference, MappedActions, Middleware, InitActions, Meta } from './types'
 import { runWithMiddleware } from './middleware'
 
 /**
@@ -7,39 +7,43 @@ import { runWithMiddleware } from './middleware'
 export function mapActionsToDispatch<
     TState,
     TContexts extends Contexts,
-    TInitActions extends InitActions<TState, TContexts>
+    TMeta extends Meta,
+    TInitActions extends InitActions<TState, TContexts, TMeta>
 >(
-    contextReference: ContextReference<TState, TContexts>,
+    contextReference: ContextReference<TState, TContexts, TMeta>,
     actions?: TInitActions,
-    middleware: Middleware[] = []
-): MappedActions<TState, TContexts, TInitActions> {
+    middleware: Middleware[] = [],
+): MappedActions<TState, TContexts, TMeta, TInitActions> {
     if (actions === undefined || typeof actions !== 'function')
-        return {} as MappedActions<TState, TContexts, TInitActions>
+        return {} as MappedActions<TState, TContexts, TMeta, TInitActions>
     const initActions = actions(contextReference)
     return Object.keys(initActions).reduce((obj, key) => {
         return {
             ...obj,
-            [key]: (...args: []) => runWithMiddleware(middleware, initActions, key, args)
+            [key]: (...args: []) => runWithMiddleware(middleware, initActions, args, { actionName: key, ...contextReference.meta })
         }
-    }, {} as MappedActions<TState, TContexts, TInitActions>)
+    }, {} as MappedActions<TState, TContexts, TMeta, TInitActions>)
 }
 /**
  * @hidden Internal function to map action creators to store actions when there are no Providers available
  */
 export function mapActionsToDefault<
     TState,
-    TInitActions extends InitActions<TState, TContexts>,
-    TContexts extends Contexts
+    TContexts extends Contexts,
+    TMeta extends Meta,
+    TInitActions extends InitActions<TState, TContexts, TMeta>
 >(
     initialState: TState,
-    actions?: TInitActions
-): MappedActions<TState, TContexts, TInitActions> {
+    meta: TMeta,
+    actions?: TInitActions,
+): MappedActions<TState, TContexts, TMeta, TInitActions> {
     if (actions === undefined || typeof actions !== 'function')
-        return {} as MappedActions<TState, TContexts, TInitActions>
-    const contextReference: ContextReference<TState, TContexts> = {
+        return {} as MappedActions<TState, TContexts, TMeta, TInitActions>
+    const contextReference: ContextReference<TState, TContexts, TMeta> = {
         state: initialState,
         stores: {} as InferStores<TContexts>,
-        setState: (value) => { throw new Error(`Can't invoke 'setState' with ${value} because provider does not exist`) }
+        setState: (value) => { throw new Error(`Can't invoke 'setState' with ${value} because provider does not exist`) },
+        meta
     }
     const initActions = actions(contextReference)
     return Object.keys(initActions).reduce((obj, key) => {
@@ -47,5 +51,5 @@ export function mapActionsToDefault<
             ...obj,
             [key]: (...args: never[]) => initActions[key](...args)
         }
-    }, {} as MappedActions<TState, TContexts, TInitActions>)
+    }, {} as MappedActions<TState, TContexts, TMeta, TInitActions>)
 }

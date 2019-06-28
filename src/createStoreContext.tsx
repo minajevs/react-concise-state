@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Contexts, Store, Middleware, InitActions, MiddlewareCreator } from './types'
+import { Contexts, Store, Middleware, InitActions, MiddlewareCreator, Meta } from './types'
 import { mapActionsToDefault, mapActionsToDispatch } from './mapActions'
 import { resolveStores, resolveMiddleware } from './resolvers'
 
@@ -59,16 +59,20 @@ export default function createStoreContext<
     TState,
     TMiddlewareContexts extends Contexts = Contexts,
     TContexts extends Contexts = Contexts,
-    TInitActions extends InitActions<TState, TContexts> = InitActions<TState, TContexts>,
+    TMeta extends Meta = Meta,
+    TInitActions extends InitActions<TState, TContexts, TMeta> = InitActions<TState, TContexts, TMeta>,
     >(
         initialState: TState,
         actions: TInitActions = {} as TInitActions,
         options: {
             contexts?: TContexts,
-            middleware?: (Middleware | MiddlewareCreator<TMiddlewareContexts>)[]
+            middleware?: (Middleware | MiddlewareCreator<TMiddlewareContexts>)[],
+            meta?: TMeta
         } = {}
-    ): [React.Context<Store<TState, TContexts, TInitActions>>, React.FC] {
-    const store = { ...initialState, ...mapActionsToDefault(initialState, actions) } as Store<TState, TContexts, TInitActions>
+    ): [React.Context<Store<TState, TContexts, TMeta, TInitActions>>, React.FC] {
+    const _meta = options.meta || {} as TMeta
+
+    const store = { ...initialState, ...mapActionsToDefault(initialState, _meta, actions) } as Store<TState, TContexts, TMeta, TInitActions>
     const context = React.createContext(store)
 
     const provider: React.FC = props => {
@@ -82,10 +86,11 @@ export default function createStoreContext<
         const _actions = mapActionsToDispatch({
             state: _state,
             setState,
-            stores: _stores
+            stores: _stores,
+            meta: _meta
         }, actions, _middleware)
 
-        const _store = { ..._state, ..._actions } as Store<TState, TContexts, TInitActions>
+        const _store = { ..._state, ..._actions } as Store<TState, TContexts, TMeta, TInitActions>
         return (<context.Provider value={_store}>
             {props.children}
         </context.Provider>)

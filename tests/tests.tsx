@@ -18,6 +18,24 @@ describe('Test function types', () => {
         expect(result.length).toBe(2)
     })
 
+    it('can create store with no actions', () => {
+        const state = { foo: '123' }
+        const [context, provider] = createStoreContext(state, undefined)
+
+        const Consumer: React.FC = props => {
+            const store = React.useContext(context)
+
+            expect(store).toEqual(state)
+            verify()
+
+            return <div />
+        }
+
+        mount(<Consumer />)
+
+        expect(verify.mock.calls.length).toBe(1)
+    })
+
     it('can create action with no arguments', () => {
         const [context, provider] = createStoreContext({ foo: '123' }, () => ({
             action: () => { }
@@ -175,6 +193,29 @@ describe('Test function types', () => {
 
         const [context, Provider] = createStoreContext<State>({ foo: '' })
     })
+
+    it('can provide store meta info', () => {
+        const [context, Provider] = createStoreContext('empty state', ({ meta }) => ({
+            action: () => meta.testValue
+        }), {
+                meta: {
+                    testValue: 42
+                }
+            })
+
+        const Consumer: React.FC = props => {
+            const store = React.useContext(context)
+
+            expect(store.action()).toBe(42)
+            verify()
+
+            return <div />
+        }
+
+        mount(<Provider><Consumer /></Provider>)
+
+        expect(verify.mock.calls.length).toBe(1)
+    })
 })
 
 describe('Logic', () => {
@@ -329,12 +370,12 @@ describe('Logic', () => {
 describe('Middleware', () => {
     const verify = jest.fn()
 
-    const testMiddleware1: Middleware = (next, actionKey, args) => {
-        verify(actionKey, args)
+    const testMiddleware1: Middleware = (next, args, meta) => {
+        verify(meta.actionName, args)
         next(args)
     }
 
-    const testMiddleware2: Middleware = (next, actionKey, args) => {
+    const testMiddleware2: Middleware = (next, args) => {
         verify('middleware2')
         next(args)
     }
@@ -348,8 +389,8 @@ describe('Middleware', () => {
         })
     }))
 
-    const middlewareCreator = createMiddleware(({ stores }, next, actionKey, args) => {
-        stores.middlewareStore.setCalled(actionKey)
+    const middlewareCreator = createMiddleware((next, args, { stores, actionName }) => {
+        stores.middlewareStore.setCalled(actionName)
         console.log('creat')
         next(args)
     }, { middlewareStore: middlewareContext })
@@ -440,5 +481,32 @@ describe('Middleware', () => {
         expect(verify.mock.calls[2][0]).toBe('fun called')
         expect(verify.mock.calls[2][1]).toBe(42)
         expect(verify.mock.calls[2][2]).toBe(true)
+    })
+
+    it('can provide store meta to middleware', () => {
+        const testMiddleware: Middleware = (next, args, meta) => {
+            verify(meta.comingFromStore)
+            next(args)
+        }
+
+        const [context, Provider] = createStoreContext({ foo: '' }, () => ({
+            action: () => {
+
+            },
+        }), {
+                middleware: [testMiddleware],
+                meta: { comingFromStore: true }
+            })
+
+        const Consumer: React.FC = props => {
+            const store = React.useContext(context)
+            store.action()
+            return <div />
+        }
+
+        mount(<Provider><Consumer /></Provider>)
+        expect(verify.mock.calls.length).toBe(1)
+        expect(verify.mock.calls[0][0]).toBe(true)
+
     })
 })
