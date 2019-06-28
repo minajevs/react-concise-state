@@ -196,7 +196,7 @@ const [context, Provider] = createStoreContext(state)</code></pre>
 				<p>Basic examples:</p>
 				<pre><code class="language-tsx">// Imperative
 const actions = ({state, setState}) =&gt; ({
-    someAction: ( payload) =&gt; {
+    someAction: (payload) =&gt; {
         const newState = ... // do something
         setState(newState)
     }
@@ -321,7 +321,9 @@ mainStore.someAction(&#39;Dmitrijs&#39;)
 				<pre><code class="language-tsx">// Without middleware
 const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) =&gt; ({
     addTodo: (todo) =&gt; {
+        // Logging
         console.log(&#39;Calling addTodo with argument &#39; + todo)
+        // Error handling
         try {  
             Api.addTodo(todo)
         } catch (ex) {
@@ -329,7 +331,10 @@ const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setStat
         }
     },
     getAll: () =&gt; {
+        // Logging
         console.log(&#39;Calling getAll&#39;)
+        // Error handling
+        // Notice how at this point we are writing same stuff over and over again
         try {  
             const todos = Api.getAll()
             setState({todos})
@@ -340,15 +345,27 @@ const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setStat
 }))
 
 // With middleware
+import { Middleware } from &#39;react-concise-state&#39;
+
+// Error handling middleware
 const errorHandling: Middleware = (next, actionKey, args) =&gt; {
     try {
+        // try calling next executable function in the flow (either next middleware or aciton itself)
+        // Don&#39;t forget to pass arguments
         next(args)
     } catch (ex) {
+        // If it fails (action or other middleware) log an error
         console.log(ex)
     }      
 }
 
-const logging: Middleware = (next, actionKey, args) =&gt; console.log(`Calling ${actionKey} with arguments ${args}`)
+// Logging middleware
+const logging: Middleware = (next, actionKey, args) =&gt; {
+    // Log to console action key (name) and it&#39;s arguments
+    console.log(`Calling ${actionKey} with arguments ${args}`)
+    // Don&#39;t forget to call `next(args)`! 
+    next(args)
+}
 
 const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) =&gt; ({
     addTodo: (todo) =&gt; Api.addTodo(todo),
@@ -356,7 +373,35 @@ const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setStat
         const todos = Api.getAll()
         setState({todos})
     }
-}), { middleware: [errorHandling, logging]})</code></pre>
+}), { middleware: [errorHandling, logging]}) // Provide middleware to the store</code></pre>
+				<h4 id="createmiddleware-creating-custom-store-bind-middleware"><code>createMiddleware</code> - creating custom store-bind middleware</h4>
+				<p>Middleware is a useful pattern, which you can use to streamline store actions, make stores more generic and have almost perfect reusability across contexts.
+					Default and the easiest way to create a middleware for your store is to make a new function of type <code>Middleware</code>.
+					However, what if you want to save every exception into some store and then display those errors in some other components nicely? You may inject stores into middleware by using
+				<code>createMiddleware</code> helper. After injecting stores you may access store state and actions inside middleware. Error handling middleware example:</p>
+				<pre><code class="language-tsx">import { createMiddleware, createStoreContext } from &#39;react-concise-state&#39;
+
+// Creating errors store
+const [context, Provider] = createStateContext({
+    latestError: null as Error | null,
+    errorLog: [] as Error[]
+}, ({setState}) =&gt; {
+    // Set latestError and push it to error log
+    handleError: (error: Error) =&gt; {
+        setState(prev =&gt; ({...prev, latestError: error, errorLog: [...prev.errorLog, error]}))
+    }
+})
+
+// Creating error hadnling middleware with injected errors store
+const errorHandling = createMiddleware(({stores}, next, actionKey, args) =&gt; {
+    try {
+        await next(args)
+    } catch (ex) {
+        // Call error store to save error in it
+        stores.errors.handleError(ex)
+    }
+}, { errors: context })
+</code></pre>
 				<h2 id="typescript">TypeScript</h2>
 				<p>This library is written in TypeScript and leverages its type system to the fullest. One of the main goals of this library is to provide type-safe state management with minimum (almost zero) boilerplate code.   </p>
 				<details><summary>Why most libraries fail on this</summary><p>

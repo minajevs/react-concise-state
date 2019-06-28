@@ -10,7 +10,7 @@ export const [context, Provider] = createStoreContext(
   {
     filter: VisibilityFilter.SHOW_ALL
   },
-  {
-    setFilter: ({ setState }, filter: VisibilityFilter) => setState({ filter })
-  }
+  ({ setState }) => ({
+    setFilter: (filter: VisibilityFilter) => setState({ filter })
+  })
 )

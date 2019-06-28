@@ -4,8 +4,8 @@ export const [context, Provider] = createStoreContext(
   {
     todos: []
   },
-  {
-    addTodo: ({ state, setState }, text) => {
+  ({ state, setState }) => ({
+    addTodo: text => {
       const todo = {
         id: state.todos.length,
         completed: false,
@@ -13,12 +13,12 @@ export const [context, Provider] = createStoreContext(
       }
       setState({ ...state, todos: [...state.todos, todo] })
     },
-    toggleTodo: ({ state, setState }, id) => {
+    toggleTodo: id => {
       const newTodos = state.todos.map(todo =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
 
       setState({ ...state, todos: [...newTodos] })
     }
-  }
+  })
 )

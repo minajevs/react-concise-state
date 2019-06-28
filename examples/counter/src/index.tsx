@@ -1,22 +1,22 @@
-import * as React from "react";
-import { render } from "react-dom";
+import * as React from 'react'
+import { render } from 'react-dom'
 
-import createStoreContext from "react-concise-state";
+import createStoreContext from 'react-concise-state'
 
 // 1️⃣ create a store context providing initial state and an actions
 const [context, Provider] = createStoreContext(
   {
     counter: 0
   },
-  {
+  ({ state, setState }) => ({
     // 👇 actions modify state using provided `setState`
-    incrementBy: ({ state, setState }, increment: number) => {
-      const newValue = state.counter + increment;
-      setState({ counter: newValue });
+    incrementBy: (increment: number) => {
+      const newValue = state.counter + increment
+      setState({ counter: newValue })
     },
-    reset: ({ setState }) => setState({ counter: 0 })
-  }
-);
+    reset: () => setState({ counter: 0 })
+  })
+)
 
 // 2️⃣ wrap component in created provider
 const App = props => {
@@ -24,15 +24,15 @@ const App = props => {
     <Provider>
       <CounterComponent />
     </Provider>
-  );
-};
+  )
+}
 
 // 3️⃣ hook context in consumer to use generated store
 const CounterComponent: React.FC = props => {
-  const store = React.useContext(context);
+  const store = React.useContext(context)
   // 👇 generated store contains both the state and actions to call
-  const onIncrement = () => store.incrementBy(1);
-  const onDecrement = () => store.incrementBy(-1);
+  const onIncrement = () => store.incrementBy(1)
+  const onDecrement = () => store.incrementBy(-1)
   return (
     <div>
       <h2>Counter: {store.counter}</h2>
@@ -42,7 +42,7 @@ const CounterComponent: React.FC = props => {
 
       <button onClick={store.reset}>Reset</button>
     </div>
-  );
-};
+  )
+}
 
-render(<App />, document.getElementById("root"));
+render(<App />, document.getElementById('root'))
