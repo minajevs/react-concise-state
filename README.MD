@@ -167,7 +167,7 @@ Basic examples:
 ```tsx
 // Imperative
 const actions = ({state, setState}) => ({
-    someAction: ( payload) => {
+    someAction: (payload) => {
         const newState = ... // do something
         setState(newState)
     }
@@ -318,7 +318,9 @@ Example:
 // Without middleware
 const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) => ({
     addTodo: (todo) => {
+        // Logging
         console.log('Calling addTodo with argument ' + todo)
+        // Error handling
         try {  
             Api.addTodo(todo)
         } catch (ex) {
@@ -326,7 +328,10 @@ const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setStat
         }
     },
     getAll: () => {
+        // Logging
         console.log('Calling getAll')
+        // Error handling
+        // Notice how at this point we are writing same stuff over and over again
         try {  
             const todos = Api.getAll()
             setState({todos})
@@ -337,15 +342,27 @@ const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setStat
 }))
 
 // With middleware
+import { Middleware } from 'react-concise-state'
+
+// Error handling middleware
 const errorHandling: Middleware = (next, actionKey, args) => {
     try {
+        // try calling next executable function in the flow (either next middleware or aciton itself)
+        // Don't forget to pass arguments
         next(args)
     } catch (ex) {
+        // If it fails (action or other middleware) log an error
         console.log(ex)
     }      
 }
 
-const logging: Middleware = (next, actionKey, args) => console.log(`Calling ${actionKey} with arguments ${args}`)
+// Logging middleware
+const logging: Middleware = (next, actionKey, args) => {
+    // Log to console action key (name) and it's arguments
+    console.log(`Calling ${actionKey} with arguments ${args}`)
+    // Don't forget to call `next(args)`! 
+    next(args)
+}
 
 const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setState}) => ({
     addTodo: (todo) => Api.addTodo(todo),
@@ -353,7 +370,39 @@ const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setStat
         const todos = Api.getAll()
         setState({todos})
     }
-}), { middleware: [errorHandling, logging]})
+}), { middleware: [errorHandling, logging]}) // Provide middleware to the store
+```
+
+#### `createMiddleware` - creating custom store-bind middleware
+Middleware is a useful pattern, which you can use to streamline store actions, make stores more generic and have almost perfect reusability across contexts.
+Default and the easiest way to create a middleware for your store is to make a new function of type `Middleware`.
+However, what if you want to save every exception into some store and then display those errors in some other components nicely? You may inject stores into middleware by using 
+`createMiddleware` helper. After injecting stores you may access store state and actions inside middleware. Error handling middleware example:
+
+```tsx
+import { createMiddleware, createStoreContext } from 'react-concise-state'
+
+// Creating errors store
+const [context, Provider] = createStateContext({
+    latestError: null as Error | null,
+    errorLog: [] as Error[]
+}, ({setState}) => {
+    // Set latestError and push it to error log
+    handleError: (error: Error) => {
+        setState(prev => ({...prev, latestError: error, errorLog: [...prev.errorLog, error]}))
+    }
+})
+
+// Creating error hadnling middleware with injected errors store
+const errorHandling = createMiddleware(({stores}, next, actionKey, args) => {
+    try {
+        await next(args)
+    } catch (ex) {
+        // Call error store to save error in it
+        stores.errors.handleError(ex)
+    }
+}, { errors: context })
+
 ```
 
 ## TypeScript
