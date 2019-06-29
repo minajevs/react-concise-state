@@ -307,7 +307,7 @@ mainStore.someAction('Dmitrijs')
 // mainStore.message is "Hello, Dmitrijs, you have 2 todos!" 
 ```
 
-#### `middleware` - wrapping store actions in a middleware
+#### Wrapping store actions in a middleware
 Actions are just a functions which modify state and/or return some values. Actions may be just plain state reducers, or they can contain some complex logic with API calls 
 and data manipulation. In any case you will usually run into such situation, that all actions of the store need to do something the same way. E.g. log input values, handle errors the same way, etc... Middleware is there for that exact reason. 
 
@@ -345,7 +345,7 @@ const [todoContext, Provider] = createStoreContext({todos: []}, ({state, setStat
 import { Middleware } from 'react-concise-state'
 
 // Error handling middleware
-const errorHandling: Middleware = (next, actionKey, args) => {
+const errorHandling: Middleware = (next, args, meta) => {
     try {
         // try calling next executable function in the flow (either next middleware or aciton itself)
         // Don't forget to pass arguments
@@ -357,9 +357,9 @@ const errorHandling: Middleware = (next, actionKey, args) => {
 }
 
 // Logging middleware
-const logging: Middleware = (next, actionKey, args) => {
+const logging: Middleware = (next, args, meta) => {
     // Log to console action key (name) and it's arguments
-    console.log(`Calling ${actionKey} with arguments ${args}`)
+    console.log(`Calling ${meta.actionName} with arguments ${args}`)
     // Don't forget to call `next(args)`! 
     next(args)
 }
@@ -378,7 +378,6 @@ Middleware is a useful pattern, which you can use to streamline store actions, m
 Default and the easiest way to create a middleware for your store is to make a new function of type `Middleware`.
 However, what if you want to save every exception into some store and then display those errors in some other components nicely? You may inject stores into middleware by using 
 `createMiddleware` helper. After injecting stores you may access store state and actions inside middleware. Error handling middleware example:
-
 ```tsx
 import { createMiddleware, createStoreContext } from 'react-concise-state'
 
@@ -393,15 +392,52 @@ const [context, Provider] = createStateContext({
     }
 })
 
-// Creating error hadnling middleware with injected errors store
-const errorHandling = createMiddleware(({stores}, next, actionKey, args) => {
+// Creating error handling middleware with injected errors store
+const errorHandling = createMiddleware((next, args, meta) => {
     try {
         await next(args)
     } catch (ex) {
         // Call error store to save error in it
-        stores.errors.handleError(ex)
+        meta.stores.errors.handleError(ex)
     }
 }, { errors: context })
+```
+
+#### `meta` - store metadata
+Any settings or additional store information which might be needed can be stored in special `meta` option of the store creator. This meta information is unchanged through store lifetime, is available for every action and middleware. `Meta` type is a dictionary of user-defined values. The most common usage for metadata is providing API url/token, dev/prod flags or anything else which is static through application lifetime. Example:
+
+```tsx
+// This file will export correct baseUrl and headers for authentication base on the environment (DEV/TEST/PROD)
+import { baseUrl, authHeaders } from './config'
+
+const [context, Provider] = createStateContext({
+    todos: []
+}, ({setState, meta}) => {
+    getAll: async () => {
+        // Use provided meta data. It is alternative way of using those values from global scope
+        const res = await fetch(meta.baseUrl, { headers: meta.headers })
+        const todos = await res.json()
+        setState({todos})
+    }
+}. {
+    // Provide values through meta option
+    meta: {
+        baseUrl: baseUrl,
+        headers: authHeaders,
+        // Flag to tell logging middleware that this store must not be logged 
+        shouldNotLog: true
+    },
+    middleware: [logging]
+})
+
+// Logging middleware
+const logging: Middleware = (next, args, meta) => {
+    // Check meta data to see if this store should not be logged
+    if (meta.shouldNotLog) return next(args)
+
+    console.log(`Calling ${meta.actionName} with arguments ${args}`)
+    next(args)
+}
 
 ```
 
@@ -428,7 +464,7 @@ You can also provide `TState` type to constrain initial state or narrow state ty
 ![Initial state constrained demo](/assets/initial-state-constrained.gif)
 
 #### 2. `actions`
-When creating store actions you will be provided with correct types for current `state`, `setState` method and `stores` object. 
+When creating store actions you will be provided with correct types for current `state`, `setState` method and `stores` and `meta` objects. 
 
 ![Action types provided demo](/assets/action-types-provided.gif)
 
