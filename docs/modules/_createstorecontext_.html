@@ -83,13 +83,13 @@
 					<a name="createstorecontext" class="tsd-anchor"></a>
 					<h3>create<wbr>Store<wbr>Context</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>Store<wbr>Context&lt;TState, TMiddlewareContexts, TContexts, TInitActions&gt;<span class="tsd-signature-symbol">(</span>initialState<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TState</span>, actions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">TInitActions</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Context</span><span class="tsd-signature-symbol">&lt;</span><a href="_types_.html#store" class="tsd-signature-type">Store</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TInitActions</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">React.FC</span><span class="tsd-signature-symbol">]</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Store<wbr>Context&lt;TState, TMiddlewareContexts, TContexts, TMeta, TInitActions&gt;<span class="tsd-signature-symbol">(</span>initialState<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TState</span>, actions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">TInitActions</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Context</span><span class="tsd-signature-symbol">&lt;</span><a href="_types_.html#store" class="tsd-signature-type">Store</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TMeta</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TInitActions</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">React.FC</span><span class="tsd-signature-symbol">]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/6a7646d/src/createStoreContext.tsx#L58">createStoreContext.tsx:58</a></li>
+									<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/c09ee0b/src/createStoreContext.tsx#L58">createStoreContext.tsx:58</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -120,7 +120,10 @@
 									</div>
 								</li>
 								<li>
-									<h4>TInitActions<span class="tsd-signature-symbol">: </span><a href="_types_.html#initactions" class="tsd-signature-type">InitActions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									<h4>TMeta<span class="tsd-signature-symbol">: </span><a href="_types_.html#meta-1" class="tsd-signature-type">Meta</a></h4>
+								</li>
+								<li>
+									<h4>TInitActions<span class="tsd-signature-symbol">: </span><a href="_types_.html#initactions" class="tsd-signature-type">InitActions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TMeta</span><span class="tsd-signature-symbol">&gt;</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -180,12 +183,15 @@
 											<h5><span class="tsd-flag ts-flagOptional">Optional</span> contexts<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">TContexts</a></h5>
 										</li>
 										<li class="tsd-parameter">
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> meta<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">TMeta</a></h5>
+										</li>
+										<li class="tsd-parameter">
 											<h5><span class="tsd-flag ts-flagOptional">Optional</span> middleware<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
 										</li>
 									</ul>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Context</span><span class="tsd-signature-symbol">&lt;</span><a href="_types_.html#store" class="tsd-signature-type">Store</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TInitActions</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">React.FC</span><span class="tsd-signature-symbol">]</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Context</span><span class="tsd-signature-symbol">&lt;</span><a href="_types_.html#store" class="tsd-signature-type">Store</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TState</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TContexts</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TMeta</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TInitActions</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">React.FC</span><span class="tsd-signature-symbol">]</span></h4>
 							<p>tuple, where context is [[React.Context]] and should be consumed to access store,
 							and Provider is [[React.FC]] (functional component) without props, which enables store actions for any nested components</p>
 						</li>

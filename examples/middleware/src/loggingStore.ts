@@ -10,10 +10,10 @@ export const [loggingContext, Provider] = createStoreContext(
 )
 
 export const loggingMiddleware = createMiddleware(
-  ({ stores }, next, actionKey, args) => {
+  (next, args, { stores, actionName }) => {
     stores.logs.write(
-      `Calling '${actionKey}' ${args !== undefined &&
-        ' with ' + JSON.stringify(args)}`
+      `Calling '${actionName}' ${args !== undefined &&
+      ' with ' + JSON.stringify(args)}`
     )
     next(args)
   },
