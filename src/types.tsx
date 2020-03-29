@@ -121,11 +121,12 @@ export type MiddlewareAction<TArgs extends [] = [], TReturn = any> =
 /**
  * Meta information about current store and action which is being executed
  */
-export type MiddlewareMeta = {
+export type MiddlewareMeta<TState> = {
     /**
     * Name of the action which is currently being executed
     */
     readonly actionName: string
+    readonly state: TState
 } & Meta
 
 /**
@@ -136,8 +137,8 @@ export type MiddlewareMeta = {
  * @param args Array of action arguments, which action was originally called with
  * @param meta [[MiddlewareMeta]] Object which contains useful meta information about current store and action which is being executed
  */
-export type Middleware<TArgs extends [] = [], TReturn extends any = any, TMiddlewareAction extends MiddlewareAction<TArgs> = MiddlewareAction<TArgs>> =
-    (next: TMiddlewareAction, args: TArgs, meta: MiddlewareMeta) => Promise<TReturn> | TReturn
+export type Middleware<TState = any, TArgs extends [] = [], TReturn extends any = any, TMiddlewareAction extends MiddlewareAction<TArgs> = MiddlewareAction<TArgs>> =
+    (next: TMiddlewareAction, args: TArgs, meta: MiddlewareMeta<TState>) => Promise<TReturn> | TReturn
 
 /**
  * Special middleware context reference object which will be provided to the middleware
@@ -152,12 +153,13 @@ export type MiddlewareContextReference<TContexts extends Contexts> = {
  */
 export type InitMiddleware<
     TContexts extends Contexts = Contexts,
+    TState = any,
     TArgs extends [] = [],
     TMiddlewareAction extends MiddlewareAction<TArgs> = MiddlewareAction<TArgs>
     > = (
         next: TMiddlewareAction,
         args: TArgs,
-        meta: MiddlewareContextReference<TContexts> & MiddlewareMeta,
+        meta: MiddlewareContextReference<TContexts> & MiddlewareMeta<TState>,
     ) => Promise<void> | void
 
 /**

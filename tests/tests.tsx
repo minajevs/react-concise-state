@@ -198,10 +198,10 @@ describe('Test function types', () => {
         const [context, Provider] = createStoreContext('empty state', ({ meta }) => ({
             action: () => meta.testValue
         }), {
-                meta: {
-                    testValue: 42
-                }
-            })
+            meta: {
+                testValue: 42
+            }
+        })
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -406,8 +406,8 @@ describe('Middleware', () => {
                 verify('fun called', number, boolean)
             },
         }), {
-                middleware: [testMiddleware1]
-            })
+            middleware: [testMiddleware1]
+        })
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -432,8 +432,8 @@ describe('Middleware', () => {
                 // verify('fun called', number, boolean)
             },
         }), {
-                middleware: [middlewareCreator]
-            })
+            middleware: [middlewareCreator]
+        })
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -462,8 +462,8 @@ describe('Middleware', () => {
                 verify('fun called', number, boolean)
             },
         }), {
-                middleware: [testMiddleware1, testMiddleware2]
-            })
+            middleware: [testMiddleware1, testMiddleware2]
+        })
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -494,9 +494,9 @@ describe('Middleware', () => {
 
             },
         }), {
-                middleware: [testMiddleware],
-                meta: { comingFromStore: true }
-            })
+            middleware: [testMiddleware],
+            meta: { comingFromStore: true }
+        })
 
         const Consumer: React.FC = props => {
             const store = React.useContext(context)
@@ -507,6 +507,28 @@ describe('Middleware', () => {
         mount(<Provider><Consumer /></Provider>)
         expect(verify.mock.calls.length).toBe(1)
         expect(verify.mock.calls[0][0]).toBe(true)
+    })
 
+    it('can access store state in a middleware', () => {
+        const testMiddleware: Middleware = (next, args, meta) => {
+            verify(meta.state.foo)
+            next(args)
+        }
+
+        const [context, Provider] = createStoreContext({ foo: 'foo-value' }, ({ setState }) => ({
+            action: () => { },
+        }), {
+            middleware: [testMiddleware]
+        })
+
+        const Consumer: React.FC = props => {
+            const store = React.useContext(context)
+            store.action()
+            return <div />
+        }
+
+        mount(<Provider><Consumer /></Provider>)
+        expect(verify.mock.calls.length).toBe(1)
+        expect(verify.mock.calls[0][0]).toBe('foo-value')
     })
 })

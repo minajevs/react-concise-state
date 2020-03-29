@@ -21,12 +21,12 @@ export function runWithMiddleware<
     TContexts extends Contexts,
     TArgs extends [],
     TReturn,
-    TMiddleware extends Middleware<TArgs, TReturn>
+    TMiddleware extends Middleware<TState, TArgs, TReturn>
 >(
     middleware: TMiddleware[],
     actions: RetType<InitActions<TState, TContexts, Meta>>,
     args: TArgs,
-    meta: MiddlewareMeta
+    meta: MiddlewareMeta<TState>
 ): TReturn | Promise<TReturn> {
     const [first, ...rest] = middleware
 

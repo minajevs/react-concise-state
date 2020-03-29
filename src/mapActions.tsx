@@ -20,7 +20,7 @@ export function mapActionsToDispatch<
     return Object.keys(initActions).reduce((obj, key) => {
         return {
             ...obj,
-            [key]: (...args: []) => runWithMiddleware(middleware, initActions, args, { actionName: key, ...contextReference.meta })
+            [key]: (...args: []) => runWithMiddleware(middleware, initActions, args, { state: contextReference.state, actionName: key, ...contextReference.meta })
         }
     }, {} as MappedActions<TState, TContexts, TMeta, TInitActions>)
 }
