@@ -12,11 +12,11 @@
   ],
   "scripts": {
     "build": "tsc -p .",
-    "test": "./node_modules/.bin/jest --collectCoverage",
-    "test:watch": "./node_modules/.bin/jest --watch",
-    "coverage": "./node_modules/.bin/codecov",
-    "docs": "./node_modules/.bin/typedoc --readme README.md --name react-concise-state --out ./docs/ --tsconfig tsconfig.json --excludePrivate --excludeExternals && echo > ./docs/.nojekyll",
-    "prepublish": "./node_modules/.bin/rimraf docs && ./node_modules/.bin/rimraf dist && yarn run test && yarn run build && yarn run docs"
+    "test": "jest --collectCoverage",
+    "test:watch": "jest --watch",
+    "coverage": "codecov",
+    "docs": "typedoc --readme README.md --name react-concise-state --out ./docs/ --tsconfig tsconfig.json --excludePrivate --excludeExternals && echo > ./docs/.nojekyll",
+    "prepublish": "rimraf docs && rimraf dist && npm run test && npm run build && npm run docs"
   },
   "keywords": [
     "react",
@@ -45,7 +45,7 @@
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0",
     "typedoc": "^0.14.2",
-    "typescript": "^3.5.1"
+    "typescript": "^3.8.3"
   },
   "jest": {
     "moduleFileExtensions": [

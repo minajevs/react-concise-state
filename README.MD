@@ -7,6 +7,8 @@
 
 Simple, low-impact state manager for smaller React applications. 
 
+`npm install react-concise-state`
+
 ```tsx
 import createStoreContext from "react-concise-state"
 

@@ -89,35 +89,19 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/c09ee0b/src/createStoreContext.tsx#L58">createStoreContext.tsx:58</a></li>
+									<li>Defined in <a href="https://github.com/minajevs/react-concise-state/blob/8efe5f5/src/createStoreContext.tsx#L58">createStoreContext.tsx:58</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Creates react context with state store. Store consists of state properties and actions which modify it.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>typeparam</dt>
-									<dd><p>creator function of a dictionary (key-value object) of action creators</p>
-									</dd>
-								</dl>
-							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
 									<h4>TState</h4>
-									<div class="tsd-comment tsd-typography">
-										<p>any JS object representing application or application part state</p>
-									</div>
 								</li>
 								<li>
 									<h4>TMiddlewareContexts<span class="tsd-signature-symbol">: </span><a href="_types_.html#contexts" class="tsd-signature-type">Contexts</a></h4>
 								</li>
 								<li>
 									<h4>TContexts<span class="tsd-signature-symbol">: </span><a href="_types_.html#contexts" class="tsd-signature-type">Contexts</a></h4>
-									<div class="tsd-comment tsd-typography">
-										<p>a dictionary (key-value object) of injected store contexts</p>
-									</div>
 								</li>
 								<li>
 									<h4>TMeta<span class="tsd-signature-symbol">: </span><a href="_types_.html#meta-1" class="tsd-signature-type">Meta</a></h4>
@@ -130,63 +114,21 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>initialState: <span class="tsd-signature-type">TState</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>initial state</p>
-									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> actions: <span class="tsd-signature-type">TInitActions</span><span class="tsd-signature-symbol"> =&nbsp;{} as TInitActions</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>is a function which creates dictionary (key-value object) of action creators for a given store. Actions might have arguments, can modify state and return values.
-										Actions creator provide special <a href="_types_.html#contextreference">ContextReference</a> object for all action-creators, which has:</p>
-										<ul>
-											<li><code>setState</code> method to modify state</li>
-											<li><code>state</code> object to access current state of type</li>
-											<li><code>stores</code> object to access injected store contexts</li>
-										</ul>
-										<p>Any argument in action creator will be converted to action parameter, which user must provide when calling action.</p>
-										<p>Example:</p>
-										<ul>
-											<li>Action creator:<pre><code class="language-typescript">(reference) =&gt; {
-   actionName: <span class="hljs-function">(<span class="hljs-params">payload: <span class="hljs-built_in">string</span></span>) =&gt;</span> {
-        reference.setState({whatever: payload})
-   }
-}</code></pre>
-											</li>
-											<li>Action:<pre><code class="language-typescript">store.actionName(<span class="hljs-string">"Hello world"</span>)</code></pre>
-											</li>
-										</ul>
-									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>is special configuration object with 2 candidate properties: <code>contexts</code> and <code>middleware</code></p>
-										<ul>
-											<li><code>contexts</code> is a dictionary (key-value object) of injected store contexts. Those stores will be resolved and passed to actions in <code>stores</code> property of <a href="_types_.html#contextreference">ContextReference</a></li>
-											<li><code>middleware</code> is an array of used middleware. Middleware is special function which is executed after store action is called and before it is actually exectude.
-											Examples of middleware could be LogginMiddleware, which logs every action request to console, or ErrorHandlerMiddleware, which wraps every request in <code>try...catch</code> block</li>
-										</ul>
-										<p>Example:</p>
-										<pre><code class="language-typescript">createStoreContext({foo: <span class="hljs-string">'123'</span>}, <span class="hljs-function">(<span class="hljs-params">reference</span>) =&gt;</span> ({
- action: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-     reference.stores.bar.someBarAction()
-     <span class="hljs-keyword">return</span> reference.stores.bar.someBarProperty
- }
-}), {
-     contexts: {  bar: barContext },
-     middleware: [ loggingMiddleware, errorHandlerMiddleware ]
-})</code></pre>
-									</div>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter">
-											<h5><span class="tsd-flag ts-flagOptional">Optional</span> contexts<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">TContexts</a></h5>
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> contexts<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type">TContexts</a></h5>
 										</li>
 										<li class="tsd-parameter">
-											<h5><span class="tsd-flag ts-flagOptional">Optional</span> meta<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">TMeta</a></h5>
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> meta<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type">TMeta</a></h5>
 										</li>
 										<li class="tsd-parameter">
-											<h5><span class="tsd-flag ts-flagOptional">Optional</span> middleware<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
+											<h5><span class="tsd-flag ts-flagOptional">Optional</span> middleware<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
 										</li>
 									</ul>
 								</li>
